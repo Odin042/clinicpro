@@ -8,15 +8,15 @@ import { useTheme } from "@mui/material/styles";
 export const Navbar = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorEl, setAnchorEl] = useState<EventTarget | null>(null);
 
-  const handleMenuOpen = ({event}:any) => {
-    setAnchorEl(event.currentTarget);
+  const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget as HTMLElement);
   };
 
   const handleMenuClose = () => {
     setAnchorEl(null);
-  };
+  }
 
   return (
     <S.Container>
