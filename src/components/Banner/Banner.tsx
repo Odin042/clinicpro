@@ -21,7 +21,7 @@ export const Banner = () => {
             display: { xs: "none", sm: "block" },
           }}
         >
-          Casdastre-se
+          Cadastre-se
         </Button>
       </S.Title>
       <S.ImageBanner>
