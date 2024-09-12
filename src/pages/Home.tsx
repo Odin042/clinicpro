@@ -1,6 +1,7 @@
 import React from "react";
 import { Banner } from "../components/Banner/Banner";
 import Navbar from "../components/NavBar/Navbar";
+import { BannerTeam } from "../components/BannerTeam/BannerTeam";
 
 
 export const Home = () => {
@@ -8,6 +9,7 @@ export const Home = () => {
   <div>
     <Navbar />
     <Banner />
+    <BannerTeam />
   </div>
   )
 };
