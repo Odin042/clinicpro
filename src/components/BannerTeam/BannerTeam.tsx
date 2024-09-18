@@ -20,7 +20,7 @@ export const BannerTeam = () => {
             sx={{ width: 150, height: 150 }}
           />
           <Typography variant="body2" color="#252525" align="center">
-            João Carlos Cavalcante<br/> Nutricionista
+            João Carlos Cavalcante<br/> CEO
           </Typography>
         </S.AvatarWrapper>
         <S.AvatarWrapper>
@@ -30,7 +30,7 @@ export const BannerTeam = () => {
             sx={{ width: 150, height: 150 }}
           />
           <Typography variant="body2" color="#252525" align="center">
-            Guilherme Fernandes<br/> Programador
+            Guilherme Fernandes<br/> CTO
           </Typography>
         </S.AvatarWrapper>
       </S.StackWrapper>
