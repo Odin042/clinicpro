@@ -1,7 +1,7 @@
 import React from "react";
 import * as S from "./styles";
 import { Button, Typography } from "@mui/material";
-import BannerImg from "../assets/banner.jpg";
+import BannerImg from "../../../assets/banner.jpg";
 
 export const Banner = () => {
   return (

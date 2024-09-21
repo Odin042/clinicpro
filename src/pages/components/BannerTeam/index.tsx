@@ -1,8 +1,8 @@
 import React from "react";
 import * as S from "./styles";
 import { Avatar, Typography } from "@mui/material";
-import Joao from "../assets/joao.jpeg";
-import Guilherme from "../assets/guilherme.jpeg";
+import Joao from "../../../assets/joao.jpeg";
+import Guilherme from "../../../assets/guilherme.jpeg";
 
 export const BannerTeam = () => {
   return (
