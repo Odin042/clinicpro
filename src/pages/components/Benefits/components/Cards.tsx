@@ -11,7 +11,7 @@ type CardsProps = {
 export const Cards = ({ icone, title, description }: CardsProps) => {
   return (
     <S.Container>
-      <Card sx={{ width: 300, height: 350, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+      <Card sx={{ width: 300, height: 350, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', borderRadius: '20px'}}>
         <CardContent sx={{ textAlign: 'center' }}>
           <img src={icone} alt="icone" style={{ width: '80px', height: '80px', marginBottom: '20px' }} />
           <Typography gutterBottom variant="h5" component="div" sx={{ fontWeight: 'bold' }}>

@@ -6,6 +6,7 @@ import * as S from "./styles";
 import Computer from "../assets/icons/computer.png";
 import { Typography } from "@mui/material";
 import { Benefits } from "./components/Benefits";
+import BannerFuction from "./components/BannerFuction";
 
 
 export const Home = () => {
@@ -21,6 +22,7 @@ export const Home = () => {
       <Typography variant="h3">Pronto para mudar o rumo do seu consultório?</Typography>
     </S.WrapperTextCenter>
     <Benefits />
+    <BannerFuction />
   </div>
   )
 };
