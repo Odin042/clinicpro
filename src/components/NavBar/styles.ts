@@ -30,7 +30,8 @@ export const StyledAppBar = styled.div`
 
 export const LogoWrapper = styled.div`
   img {
-    height: 60px;
+    width: 160px;
+    height: 150px;
     margin-right: 10px;
   }
 `;

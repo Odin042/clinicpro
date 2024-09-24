@@ -19,7 +19,7 @@ export const Home = () => {
       <S.ImageCenter>
        <img src={Computer} alt="logo" />
       </S.ImageCenter>
-      <Typography variant="h3">Pronto para mudar o rumo do seu consultório?</Typography>
+      <Typography variant="h3">Já pensou o seu consultorio lucrando todos os dias ?</Typography>
     </S.WrapperTextCenter>
     <Benefits />
     <BannerFuction />

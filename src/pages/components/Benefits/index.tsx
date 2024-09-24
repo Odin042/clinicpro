@@ -14,8 +14,8 @@ export const Benefits = () => {
       </Typography>
       <S.WrapperCards>
         <Cards icone={Setas} title={'Gestão do seu consultório'} description={'Aproveite nossa feramenta para gerenciar seu consultório'}  />
-        <Cards icone={Dardo} title={'Seja Acertivo'} description={'Com planejamento certo você pode ir mais longe'}  />
-        <Cards icone={Produtividade} title={'Aumente sua produtividade'} description={'Aumente sua produtividade  e aumente seus lucros'}  />
+        <Cards icone={Dardo} title={'Seja Acertivo'} description={'Encontre os erros que podem estar dificultando os seus lucros!'}  />
+        <Cards icone={Produtividade} title={'Aumente sua produtividade'} description={'Escale de forma organizada e eficiente para lucros mais solidos!'}  />
       </S.WrapperCards>
     </S.Container>
   )

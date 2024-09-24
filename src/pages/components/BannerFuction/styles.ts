@@ -19,7 +19,7 @@ export const WrapperImage = styled.div`
   width: 50%;
 
   img {
-    width: 100%;
+    width: 150%;
     height: 100%;
     object-fit: contain;
   }
@@ -39,9 +39,12 @@ export const WrapperTextCenter = styled.div`
   align-items: center;
   padding: 2rem;
   text-align: center;
+  max-width: 80%;
 
   @media (max-width: 600px) {
     width: 100%;
+    max-width: 100%;
     order: 1; 
+    text-align: left;
   }
 `;

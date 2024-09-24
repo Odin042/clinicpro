@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Typography, Menu, MenuItem, IconButton, useMediaQuery, Button } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import Logo from "../../assets/clinicprologo.png";
+import Logo from "../../assets/clinic360logo.png";
 import * as S from "./styles";
 import { useTheme } from "@mui/material/styles";
 

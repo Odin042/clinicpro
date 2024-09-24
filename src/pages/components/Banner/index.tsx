@@ -8,7 +8,7 @@ export const Banner = () => {
     <S.Container>
       <S.Title>
         <Typography variant="h3">
-          Seja Bem-Vindo ao Clinic<strong>PRO</strong>{" "}
+          Seja Bem-Vindo ao Clinic<strong>360</strong>{" "}
         </Typography>
         <Typography variant="h6" sx={{ alignItems: "flex-start" }}>
           A maior plataforma de gestão de consultórios do Brasil

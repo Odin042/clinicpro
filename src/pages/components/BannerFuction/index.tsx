@@ -15,26 +15,41 @@ export const BannerFuction = () => {
           <img src={Banner} alt="Banner" />
         </S.WrapperImage>
         <S.WrapperTextCenter>
-          <Typography variant="h2">Como a consultoria funciona?</Typography>
+          <Typography variant="h2">
+            Clinic360: Domine sua clínica e alcance o sucesso financeiro.
+          </Typography>
           <Typography
             variant="h6"
             sx={{ margin: "30px 0 0 0", textAlign: "start" }}
           >
-            A consultoria é realizada em 3 etapas: diagnóstico, plano de ação e
-            acompanhamento. O diagnóstico é feito através de uma análise
-            detalhada do seu negócio, identificando os pontos fortes e fracos.
-            Com base nesse diagnóstico, é elaborado um plano de ação para
-            melhorar os resultados da sua empresa. Por fim, o acompanhamento é
-            feito para garantir que o plano de ação seja implementado
-            corretamente e que os resultados esperados sejam alcançados.
+            Cansado de não saber como anda a saúde financeira da sua clínica?
+            Com a Clinic360, você terá todas as informações nas suas mãos para
+            tomar decisões estratégicas e impulsionar seus resultados.
+          </Typography>
+          <Typography variant="h5" sx={{ margin: "30px 0 0 0", textAlign: "start", fontWeight: 'bold' }}>
+            O que a Clinic360 faz por você:
+          </Typography>
+          <Typography
+            variant="h6"
+            sx={{ margin: "30px 0 0 0", textAlign: "start" }}
+          >
+            Cansado de não saber como anda a saúde financeira da sua clínica?
+            Com a Clinic360, você terá todas as informações nas suas mãos para
+            tomar decisões estratégicas e impulsionar seus resultados.
           </Typography>
 
           <Box>
             {[
-              "Aprenda a calcular o valor das consultas.",
-              "Gerencie seus gastos",
-              "Aumente seus lucros",
-              "Estratégias de como aplicar o seu dinheiro",
+              "Coleta e organiza todos os dados da sua clínica.",
+              "Analisa seus gastos e receitas, gerando um diagnóstico preciso.",
+              "Define o valor ideal para suas consultas e procedimentos.",
+              "Automatiza processos como agendamento e emissão de orçamentos.",
+              "Oferece insights para você tomar decisões mais assertivas.",
+              "Controle total da sua clínica.",
+              "Aumento da lucratividade.",
+              "Decisões mais estratégicas.",
+              "Mais tempo para cuidar dos seus pacientes.",
+              "Não perca mais tempo e comece a transformar a sua clínica!"
             ].map((text, index) => (
               <Box
                 key={index}
@@ -42,6 +57,7 @@ export const BannerFuction = () => {
                   display: "flex",
                   alignItems: "center",
                   margin: { xs: "20px 0", sm: "50px 0 0 0" },
+                  maxWidth: '300px'
                 }}
               >
                 <CheckCircleIcon
@@ -52,7 +68,7 @@ export const BannerFuction = () => {
                   sx={{
                     fontSize: { xs: "0.9rem", sm: "1rem" },
                     wordWrap: "break-word",
-                    whiteSpace: "nowrap",
+                    whiteSpace: { xs: "normal", sm: "nowrap" },
                   }}
                 >
                   {text}
