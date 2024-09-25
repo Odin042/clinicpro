@@ -29,15 +29,6 @@ export const BannerFuction = () => {
           <Typography variant="h5" sx={{ margin: "30px 0 0 0", textAlign: "start", fontWeight: 'bold' }}>
             O que a Clinic360 faz por você:
           </Typography>
-          <Typography
-            variant="h6"
-            sx={{ margin: "30px 0 0 0", textAlign: "start" }}
-          >
-            Cansado de não saber como anda a saúde financeira da sua clínica?
-            Com a Clinic360, você terá todas as informações nas suas mãos para
-            tomar decisões estratégicas e impulsionar seus resultados.
-          </Typography>
-
           <Box>
             {[
               "Coleta e organiza todos os dados da sua clínica.",
