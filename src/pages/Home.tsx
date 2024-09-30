@@ -7,6 +7,7 @@ import Computer from "../assets/icons/computer.png";
 import { Typography } from "@mui/material";
 import { Benefits } from "./components/Benefits";
 import BannerFuction from "./components/BannerFuction";
+import { OfferCard } from "./components/OfferCard";
 
 
 export const Home = () => {
@@ -23,6 +24,7 @@ export const Home = () => {
     </S.WrapperTextCenter>
     <Benefits />
     <BannerFuction />
+    <OfferCard />
   </div>
   )
 };
