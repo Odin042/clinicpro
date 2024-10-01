@@ -8,6 +8,7 @@ import { Typography } from "@mui/material";
 import { Benefits } from "./components/Benefits";
 import BannerFuction from "./components/BannerFuction";
 import { OfferCard } from "./components/OfferCard";
+import Questions from "./components/Questions";
 
 
 export const Home = () => {
@@ -25,6 +26,7 @@ export const Home = () => {
     <Benefits />
     <BannerFuction />
     <OfferCard />
+    <Questions />
   </div>
   )
 };
