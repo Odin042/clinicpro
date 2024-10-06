@@ -9,6 +9,7 @@ import { Benefits } from "./components/Benefits";
 import BannerFuction from "./components/BannerFuction";
 import { OfferCard } from "./components/OfferCard";
 import Questions from "./components/Questions";
+import { Footer } from "../components/Footer";
 
 
 export const Home = () => {
@@ -27,6 +28,7 @@ export const Home = () => {
     <BannerFuction />
     <OfferCard />
     <Questions />
+    <Footer />
   </div>
   )
 };
