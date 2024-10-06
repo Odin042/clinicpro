@@ -15,7 +15,7 @@ export const LogoWrapper = styled.div`
   margin-left: 60px;
   img {
     width: 150px;
-    margin-left: 50px;
+    margin-left: 60px;
   }
 `;
 

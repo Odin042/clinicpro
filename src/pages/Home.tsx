@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Banner } from "./components/Banner";
 import Navbar from "../components/NavBar";
 import { BannerTeam } from "./components/BannerTeam";
@@ -11,26 +11,65 @@ import { OfferCard } from "./components/OfferCard";
 import Questions from "./components/Questions";
 import { Footer } from "../components/Footer";
 
-
 export const Home = () => {
+  // Criando as referências para cada seção
+  const bannerRef = useRef(null);
+  const bannerTeamRef = useRef(null);
+  const benefitsRef = useRef(null);
+  const bannerFuctionRef = useRef(null);
+  const offerCardRef = useRef(null);
+  const questionsRef = useRef(null);
+  const footerRef = useRef(null);
+
   return (
-  <div>
-    <Navbar />
-    <Banner />
-    <BannerTeam />
-    <S.WrapperTextCenter>
-      <S.ImageCenter>
-       <img src={Computer} alt="logo" />
-      </S.ImageCenter>
-      <Typography variant="h3">Já pensou o seu consultorio lucrando todos os dias ?</Typography>
-    </S.WrapperTextCenter>
-    <Benefits />
-    <BannerFuction />
-    <OfferCard />
-    <Questions />
-    <Footer />
-  </div>
-  )
+    <div>
+      <Navbar
+        sections={{
+          homeRef: bannerRef,
+          aboutRef: bannerTeamRef,
+          profissionaisRef: benefitsRef,
+          bannerFuctionRef: bannerFuctionRef,
+          valoresRef: offerCardRef,
+          faqRef: questionsRef,
+        }}
+      />
+
+      <div ref={bannerRef}>
+        <Banner />
+      </div>
+
+      <div ref={bannerTeamRef}>
+        <BannerTeam />
+      </div>
+
+      <S.WrapperTextCenter>
+        <S.ImageCenter>
+          <img src={Computer} alt="logo" />
+        </S.ImageCenter>
+        <Typography variant="h3">Já pensou o seu consultorio lucrando todos os dias?</Typography>
+      </S.WrapperTextCenter>
+
+      <div ref={benefitsRef}>
+        <Benefits />
+      </div>
+
+      <div ref={bannerFuctionRef}>
+        <BannerFuction />
+      </div>
+
+      <div ref={offerCardRef}>
+        <OfferCard />
+      </div>
+
+      <div ref={questionsRef}>
+        <Questions />
+      </div>
+
+      <div>
+        <Footer />
+      </div>
+    </div>
+  );
 };
 
 export default Home;
