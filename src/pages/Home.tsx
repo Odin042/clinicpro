@@ -19,7 +19,6 @@ export const Home = () => {
   const bannerFuctionRef = useRef(null);
   const offerCardRef = useRef(null);
   const questionsRef = useRef(null);
-  const footerRef = useRef(null);
 
   return (
     <div>

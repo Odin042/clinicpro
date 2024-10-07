@@ -4,16 +4,12 @@ import * as S from './styles'
 
 const faqs = [
   {
-    question: "1- Qual o propósito da ferramenta?",
-    answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex, sit amet blandit leo lobortis eget."
+    question: "1. Como o clinic360 pode me ajudar no dia a dia do consultorio? ",
+    answer: "O clinic360 é uma ferramenta capaz de oferecer informações detalhadas que seriam necessárias semanas para serem identificas por assessorias presenciais. Veja um exemplo: ele é capaz de informar qual o verdadeiro valor da sua consulta, e como você deve se organizar para poder ter lucros solidos, apenas preenchendo os seus gastos mensais. "
   },
   {
-    question: "2- Como faço para criar uma conta?",
-    answer: "Para criar uma conta, basta clicar no botão de cadastro no canto superior direito e seguir os passos."
-  },
-  {
-    question: "3- A ferramenta é gratuita?",
-    answer: "Sim, a ferramenta possui uma versão gratuita, com opções de upgrade para planos pagos."
+    question: "2. O que diferencia o Clinic360 dos outros sistemas? ",
+    answer: "O clinic360 diferente dos outros sistemas é capaz de gerir sua agenda, sua saúde financeira da clinica e ainda é um sistema que oferecer uma auto-consultoria que oferece dados rápidos: Como cobrar suas consultas, planos de acompanhamento, gastos que estão sem controle, pagamentos e trabalho de contabilidade como emissão de nota fiscal e abertura de CNPJ e alvara de funcionamento."
   },
 ]
 

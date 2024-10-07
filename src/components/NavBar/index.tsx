@@ -25,7 +25,6 @@ export const Navbar = ({ sections }) => {
     setAnchorEl(null);
   };
 
-  // Função para rolar até a seção correspondente
   const scrollToSection = (sectionRef: React.RefObject<HTMLElement>) => {
     if (sectionRef.current) {
       sectionRef.current.scrollIntoView({ behavior: "smooth" });
@@ -115,13 +114,14 @@ export const Navbar = ({ sections }) => {
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
         anchorOrigin={{
-          vertical: "top",
-          horizontal: "right",
+          vertical: 'top',
+          horizontal: 'right',
         }}
         transformOrigin={{
-          vertical: "top",
-          horizontal: "right",
+          vertical: 'top',
+          horizontal: 'right',
         }}
+        disableScrollLock={true}
       >
         <MenuItem onClick={() => scrollToSection(sections.homeRef)}>
           <Typography
