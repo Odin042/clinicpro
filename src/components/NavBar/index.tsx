@@ -1,14 +1,21 @@
-import React, { useEffect, useState } from "react"
-import { Typography, Menu, MenuItem, useMediaQuery, Button } from "@mui/material"
+import React, { useState } from "react"
+import {
+  Typography,
+  Menu,
+  MenuItem,
+  useMediaQuery,
+  Button,
+} from "@mui/material"
 import MenuIcon from "@mui/icons-material/Menu"
 import Logo from "../../assets/clinic360logo.png"
 import * as S from "./styles"
 import { useTheme } from "@mui/material/styles"
 import { useNavigate } from 'react-router-dom'
 
-export const Navbar = () => {
+
+export const Navbar = ({ sections }) => {
   const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
   const [anchorEl, setAnchorEl] = useState<EventTarget | null>(null)
   const navigate = useNavigate()
 
@@ -18,7 +25,7 @@ export const Navbar = () => {
 
   const handleMenuClose = () => {
     setAnchorEl(null);
-  };
+  }
 
   const scrollToSection = (sectionRef: React.RefObject<HTMLElement>) => {
     if (sectionRef.current) {
@@ -28,16 +35,8 @@ export const Navbar = () => {
   };
 
   const handleRegisterClick = () => {
-    navigate('/register') 
+    navigate('/login') 
   }
-
-  useEffect(() => {
-    if (anchorEl) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = 'auto'
-    }
-  }, [anchorEl])
 
   return (
     <S.Container>
@@ -55,14 +54,6 @@ export const Navbar = () => {
                   style={{ color: theme.palette.text.primary }}
                 >
                   Home
-                </Typography>
-              </MenuItem>
-              <MenuItem onClick={() => scrollToSection(sections.aboutRef)}>
-                <Typography
-                  textAlign="center"
-                  style={{ color: theme.palette.text.primary }}
-                >
-                  Quem somos
                 </Typography>
               </MenuItem>
               <MenuItem
@@ -103,9 +94,14 @@ export const Navbar = () => {
               </MenuItem>
             </S.MenuBox>
             <S.ButtonWrapper>
-              <S.StyledButton theme={theme} onClick={handleRegisterClick}>
-                Login
-              </S.StyledButton>
+              <Button
+                variant="contained"
+                color="secondary"
+                fullWidth
+                onClick={handleRegisterClick}
+              >
+                Entrar
+              </Button>
             </S.ButtonWrapper>
           </>
         )}
@@ -122,12 +118,12 @@ export const Navbar = () => {
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
         anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
+          vertical: "top",
+          horizontal: "right",
         }}
         transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
+          vertical: "top",
+          horizontal: "right",
         }}
         disableScrollLock={true}
       >
@@ -137,14 +133,6 @@ export const Navbar = () => {
             style={{ color: theme.palette.text.primary }}
           >
             Home
-          </Typography>
-        </MenuItem>
-        <MenuItem onClick={() => scrollToSection(sections.aboutRef)}>
-          <Typography
-            textAlign="center"
-            style={{ color: theme.palette.text.primary }}
-          >
-            Quem somos
           </Typography>
         </MenuItem>
         <MenuItem onClick={() => scrollToSection(sections.profissionaisRef)}>
@@ -182,7 +170,12 @@ export const Navbar = () => {
         {isMobile && (
           <>
             <MenuItem onClick={handleMenuClose}>
-              <Button variant="contained" color="secondary" fullWidth onClick={handleRegisterClick}>
+              <Button
+                variant="contained"
+                color="secondary"
+                fullWidth
+                onClick={handleRegisterClick}
+              >
                 Entrar
               </Button>
             </MenuItem>

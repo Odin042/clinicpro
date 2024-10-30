@@ -21,21 +21,50 @@ export const Home = () => {
   const questionsRef = useRef(null);
 
   return (
-  <div>
-    <Navbar />
-    <Banner />
-    <S.WrapperTextCenter>
-      <S.ImageCenter>
-       <img src={Computer} alt="logo" />
-      </S.ImageCenter>
-      <Typography variant="h3">Já pensou o seu consultorio lucrando todos os dias ?</Typography>
-    </S.WrapperTextCenter>
-    <Benefits />
-    <BannerFuction />
-    <OfferCard />
-    <Questions />
-  </div>
-  )
+    <div>
+      <Navbar
+        sections={{
+          homeRef: bannerRef,
+          aboutRef: bannerTeamRef,
+          profissionaisRef: benefitsRef,
+          bannerFuctionRef: bannerFuctionRef,
+          valoresRef: offerCardRef,
+          faqRef: questionsRef,
+        }}
+      />
+
+      <div ref={bannerRef}>
+        <Banner />
+      </div>
+
+      <S.WrapperTextCenter>
+        <S.ImageCenter>
+          <img src={Computer} alt="logo" />
+        </S.ImageCenter>
+        <Typography variant="h3">Já pensou o seu consultorio lucrando todos os dias?</Typography>
+      </S.WrapperTextCenter>
+
+      <div ref={benefitsRef}>
+        <Benefits />
+      </div>
+
+      <div ref={bannerFuctionRef}>
+        <BannerFuction />
+      </div>
+
+      <div ref={offerCardRef}>
+        <OfferCard />
+      </div>
+
+      <div ref={questionsRef}>
+        <Questions />
+      </div>
+
+      <div>
+        <Footer />
+      </div>
+    </div>
+  );
 };
 
 export default Home;
