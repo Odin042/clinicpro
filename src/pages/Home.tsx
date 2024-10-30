@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Banner } from "./components/Banner";
 import Navbar from "../components/NavBar";
 import { BannerTeam } from "./components/BannerTeam";
@@ -9,9 +9,17 @@ import { Benefits } from "./components/Benefits";
 import BannerFuction from "./components/BannerFuction";
 import { OfferCard } from "./components/OfferCard";
 import Questions from "./components/Questions";
-
+import { Footer } from "../components/Footer";
 
 export const Home = () => {
+
+  const bannerRef = useRef(null);
+  const bannerTeamRef = useRef(null);
+  const benefitsRef = useRef(null);
+  const bannerFuctionRef = useRef(null);
+  const offerCardRef = useRef(null);
+  const questionsRef = useRef(null);
+
   return (
   <div>
     <Navbar />

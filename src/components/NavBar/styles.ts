@@ -6,6 +6,7 @@ export const Container = styled.div`
   width: 100%;
   align-items: center;
   justify-content: space-between;
+  position: relative;
 
   @media (max-width: 600px) {
     flex-direction: column;
@@ -49,7 +50,11 @@ export const MenuBox = styled.div`
 `;
 
 export const MenuIconButton = styled(IconButton)`
-  display: none;
+  display: block;
+
+  @media (min-width: 600px) {
+    display: none;
+  }
 `;
 
 export const ButtonWrapper = styled.div`
@@ -65,5 +70,4 @@ export const StyledButton = styled.button`
   border: none;
   padding: 8px 16px;
   cursor: pointer;
-
 `;
