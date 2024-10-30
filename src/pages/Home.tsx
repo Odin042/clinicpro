@@ -16,7 +16,6 @@ export const Home = () => {
   <div>
     <Navbar />
     <Banner />
-    <BannerTeam />
     <S.WrapperTextCenter>
       <S.ImageCenter>
        <img src={Computer} alt="logo" />

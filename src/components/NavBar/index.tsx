@@ -1,22 +1,36 @@
-import React, { useState } from "react";
-import { Typography, Menu, MenuItem, IconButton, useMediaQuery, Button } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import Logo from "../../assets/clinic360logo.png";
-import * as S from "./styles";
-import { useTheme } from "@mui/material/styles";
+import React, { useEffect, useState } from "react"
+import { Typography, Menu, MenuItem, useMediaQuery, Button } from "@mui/material"
+import MenuIcon from "@mui/icons-material/Menu"
+import Logo from "../../assets/clinic360logo.png"
+import * as S from "./styles"
+import { useTheme } from "@mui/material/styles"
+import { useNavigate } from 'react-router-dom'
 
 export const Navbar = () => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const [anchorEl, setAnchorEl] = useState<EventTarget | null>(null);
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
+  const [anchorEl, setAnchorEl] = useState<EventTarget | null>(null)
+  const navigate = useNavigate()
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget as HTMLElement);
-  };
+    setAnchorEl(event.currentTarget as HTMLElement)
+  }
 
   const handleMenuClose = () => {
     setAnchorEl(null);
   }
+
+  const handleRegisterClick = () => {
+    navigate('/register') 
+  }
+
+  useEffect(() => {
+    if (anchorEl) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'auto'
+    }
+  }, [anchorEl])
 
   return (
     <S.Container>
@@ -45,8 +59,7 @@ export const Navbar = () => {
               </MenuItem>
             </S.MenuBox>
             <S.ButtonWrapper>
-              <S.StyledButton theme={theme}>Cadastre-se</S.StyledButton>
-              <S.StyledButton theme={theme}>
+              <S.StyledButton theme={theme} onClick={handleRegisterClick}>
                 Login
               </S.StyledButton>
             </S.ButtonWrapper>
@@ -91,13 +104,8 @@ export const Navbar = () => {
         {isMobile && (
           <>
             <MenuItem onClick={handleMenuClose}>
-              <Button variant="contained" color="primary" fullWidth>
-                Cadastre-se
-              </Button>
-            </MenuItem>
-            <MenuItem onClick={handleMenuClose}>
-              <Button variant="contained" color="secondary" fullWidth>
-                Login
+              <Button variant="contained" color="secondary" fullWidth onClick={handleRegisterClick}>
+                Entrar
               </Button>
             </MenuItem>
           </>

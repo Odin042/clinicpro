@@ -17,7 +17,7 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: 'Roboto, Arial, sans-serif'
+    fontFamily: 'Poppins, sans-serif'
   },
 });
 
