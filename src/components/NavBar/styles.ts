@@ -6,6 +6,7 @@ export const Container = styled.div`
   width: 100%;
   align-items: center;
   justify-content: space-between;
+  position: relative;
 
   @media (max-width: 600px) {
     flex-direction: column;
@@ -22,17 +23,20 @@ export const StyledAppBar = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 0 20px;
+  height: 90px;
 
   @media (max-width: 600px) {
     padding: 10px;
+    height: auto;
   }
 `;
 
 export const LogoWrapper = styled.div`
   img {
     width: 160px;
-    height: 150px;
+    height: auto;  
     margin-right: 10px;
+    object-fit: contain;
   }
 `;
 
@@ -41,10 +45,16 @@ export const MenuBox = styled.div`
   display: flex;
   justify-content: center;
   font-weight: bolder;
+  align-items: center;
+  height: 100%;
 `;
 
 export const MenuIconButton = styled(IconButton)`
-  display: none;
+  display: block;
+
+  @media (min-width: 600px) {
+    display: none;
+  }
 `;
 
 export const ButtonWrapper = styled.div`
@@ -60,5 +70,4 @@ export const StyledButton = styled.button`
   border: none;
   padding: 8px 16px;
   cursor: pointer;
-
 `;

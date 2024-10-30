@@ -2,13 +2,33 @@ import { Button, Card, CardContent, Typography } from '@mui/material'
 import * as S from './styles'
 
 type CardsProps = {
+  color?: string, // Pode ser removido se não for usado
   title: string,
   subtitle: string,
   value: string,
   benefits: string,
+  backgroundColor?: string,
+  titleColor?: string,
+  subtitleColor?: string,
+  valueColor?: string,
+  benefitsColor?: string,
+  buttonColor?: string,
+  buttonTextColor?: string,
 }
 
-export const Cards = ({ title, benefits, subtitle, value }: CardsProps) => {
+export const Cards = ({ 
+  title, 
+  subtitle, 
+  value, 
+  benefits, 
+  backgroundColor, 
+  titleColor = '#0A2472', 
+  subtitleColor = '#252525', 
+  valueColor = '#0A2472', 
+  benefitsColor = '#49504E', 
+  buttonColor = '#0A2472', 
+  buttonTextColor = '#ffffff' 
+}: CardsProps) => {
   return (
     <S.Container>
       <Card sx={{ 
@@ -19,7 +39,7 @@ export const Cards = ({ title, benefits, subtitle, value }: CardsProps) => {
         justifyContent: 'space-between', 
         alignItems: 'center', 
         borderRadius: '12px',
-        backgroundColor: '#F7F7F7',
+        backgroundColor: backgroundColor || '#ffffff',
         padding: '20px 0'  
       }}>
         <CardContent sx={{ 
@@ -31,21 +51,21 @@ export const Cards = ({ title, benefits, subtitle, value }: CardsProps) => {
           justifyContent: 'space-between',
           alignItems: 'center',
         }}>
-          <Typography gutterBottom variant="h5" component="div" sx={{ fontWeight: 'bold', margin: '0', color: '#0A2472' }}>
+          <Typography gutterBottom variant="h5" component="div" sx={{ fontWeight: 'bold', margin: '0', color: titleColor }}>
             {title}
           </Typography>
-          <Typography variant="body2" sx={{ margin: '10px 0', fontSize: '14px', color: '#252525' }}>
+          <Typography variant="body2" sx={{ margin: '10px 0', fontSize: '14px', color: subtitleColor }}>
             {subtitle}
           </Typography>
-          <Typography variant='h4' sx={{ fontWeight: 'bold', margin: '10px 0', color: '#0A2472' }}>
+          <Typography variant='h4' sx={{ fontWeight: 'bold', margin: '10px 0', color: valueColor }}>
             {value}
           </Typography>
-          <Typography variant="body1" sx={{ color: '#49504E', marginBottom: '20px', fontSize: '16px' }}>
+          <Typography variant="body1" sx={{ color: benefitsColor, marginBottom: '20px', fontSize: '16px' }}>
             {benefits}
           </Typography>
           <Button variant="contained" sx={{ 
-            backgroundColor: '#0A2472', 
-            color: '#ffffff', 
+            backgroundColor: buttonColor, 
+            color: buttonTextColor, 
             width: '80%',
             padding: '10px 0',
             fontWeight: 'bold',

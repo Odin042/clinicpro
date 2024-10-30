@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
+import { Register } from './pages/Register';
 
 
 const AppRoutes: React.FC = () => {
@@ -8,6 +9,7 @@ const AppRoutes: React.FC = () => {
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Register />} />
       </Routes>
     </Router>
   );

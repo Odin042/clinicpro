@@ -1,22 +1,43 @@
-import React, { useState } from "react";
-import { Typography, Menu, MenuItem, IconButton, useMediaQuery, Button } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import Logo from "../../assets/clinic360logo.png";
-import * as S from "./styles";
-import { useTheme } from "@mui/material/styles";
+import React, { useEffect, useState } from "react"
+import { Typography, Menu, MenuItem, useMediaQuery, Button } from "@mui/material"
+import MenuIcon from "@mui/icons-material/Menu"
+import Logo from "../../assets/clinic360logo.png"
+import * as S from "./styles"
+import { useTheme } from "@mui/material/styles"
+import { useNavigate } from 'react-router-dom'
 
 export const Navbar = () => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const [anchorEl, setAnchorEl] = useState<EventTarget | null>(null);
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
+  const [anchorEl, setAnchorEl] = useState<EventTarget | null>(null)
+  const navigate = useNavigate()
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget as HTMLElement);
-  };
+    setAnchorEl(event.currentTarget as HTMLElement)
+  }
 
   const handleMenuClose = () => {
     setAnchorEl(null);
+  };
+
+  const scrollToSection = (sectionRef: React.RefObject<HTMLElement>) => {
+    if (sectionRef.current) {
+      sectionRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+    handleMenuClose();
+  };
+
+  const handleRegisterClick = () => {
+    navigate('/register') 
   }
+
+  useEffect(() => {
+    if (anchorEl) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'auto'
+    }
+  }, [anchorEl])
 
   return (
     <S.Container>
@@ -28,25 +49,61 @@ export const Navbar = () => {
         {!isMobile && (
           <>
             <S.MenuBox>
-              <MenuItem>
-                <Typography textAlign="center" style={{ color: theme.palette.text.primary }}>Home</Typography>
+              <MenuItem onClick={() => scrollToSection(sections.homeRef)}>
+                <Typography
+                  textAlign="center"
+                  style={{ color: theme.palette.text.primary }}
+                >
+                  Home
+                </Typography>
               </MenuItem>
-              <MenuItem>
-                <Typography textAlign="center" style={{ color: theme.palette.text.primary }}>Quem somos</Typography>
+              <MenuItem onClick={() => scrollToSection(sections.aboutRef)}>
+                <Typography
+                  textAlign="center"
+                  style={{ color: theme.palette.text.primary }}
+                >
+                  Quem somos
+                </Typography>
               </MenuItem>
-              <MenuItem>
-                <Typography textAlign="center" style={{ color: theme.palette.text.primary }}>Profissionais</Typography>
+              <MenuItem
+                onClick={() => scrollToSection(sections.profissionaisRef)}
+              >
+                <Typography
+                  textAlign="center"
+                  style={{ color: theme.palette.text.primary }}
+                >
+                  Benefícios
+                </Typography>
               </MenuItem>
-              <MenuItem>
-                <Typography textAlign="center" style={{ color: theme.palette.text.primary }}>Valores</Typography>
+              <MenuItem
+                onClick={() => scrollToSection(sections.bannerFuctionRef)}
+              >
+                <Typography
+                  textAlign="center"
+                  style={{ color: theme.palette.text.primary }}
+                >
+                  O que somos
+                </Typography>
               </MenuItem>
-              <MenuItem>
-                <Typography textAlign="center" style={{ color: theme.palette.text.primary }}>FAQ</Typography>
+              <MenuItem onClick={() => scrollToSection(sections.valoresRef)}>
+                <Typography
+                  textAlign="center"
+                  style={{ color: theme.palette.text.primary }}
+                >
+                  Valores
+                </Typography>
+              </MenuItem>
+              <MenuItem onClick={() => scrollToSection(sections.faqRef)}>
+                <Typography
+                  textAlign="center"
+                  style={{ color: theme.palette.text.primary }}
+                >
+                  FAQ
+                </Typography>
               </MenuItem>
             </S.MenuBox>
             <S.ButtonWrapper>
-              <S.StyledButton theme={theme}>Cadastre-se</S.StyledButton>
-              <S.StyledButton theme={theme}>
+              <S.StyledButton theme={theme} onClick={handleRegisterClick}>
                 Login
               </S.StyledButton>
             </S.ButtonWrapper>
@@ -72,32 +129,61 @@ export const Navbar = () => {
           vertical: 'top',
           horizontal: 'right',
         }}
+        disableScrollLock={true}
       >
-        <MenuItem onClick={handleMenuClose}>
-          <Typography textAlign="center" style={{ color: theme.palette.text.primary }}>Home</Typography>
+        <MenuItem onClick={() => scrollToSection(sections.homeRef)}>
+          <Typography
+            textAlign="center"
+            style={{ color: theme.palette.text.primary }}
+          >
+            Home
+          </Typography>
         </MenuItem>
-        <MenuItem onClick={handleMenuClose}>
-          <Typography textAlign="center" style={{ color: theme.palette.text.primary }}>Quem somos</Typography>
+        <MenuItem onClick={() => scrollToSection(sections.aboutRef)}>
+          <Typography
+            textAlign="center"
+            style={{ color: theme.palette.text.primary }}
+          >
+            Quem somos
+          </Typography>
         </MenuItem>
-        <MenuItem onClick={handleMenuClose}>
-          <Typography textAlign="center" style={{ color: theme.palette.text.primary }}>Profissionais</Typography>
+        <MenuItem onClick={() => scrollToSection(sections.profissionaisRef)}>
+          <Typography
+            textAlign="center"
+            style={{ color: theme.palette.text.primary }}
+          >
+            Benefícios
+          </Typography>
         </MenuItem>
-        <MenuItem onClick={handleMenuClose}>
-          <Typography textAlign="center" style={{ color: theme.palette.text.primary }}>Valores</Typography>
+        <MenuItem onClick={() => scrollToSection(sections.bannerFuctionRef)}>
+          <Typography
+            textAlign="center"
+            style={{ color: theme.palette.text.primary }}
+          >
+            O que somos
+          </Typography>
         </MenuItem>
-        <MenuItem onClick={handleMenuClose}>
-          <Typography textAlign="center" style={{ color: theme.palette.text.primary }}>FAQ</Typography>
+        <MenuItem onClick={() => scrollToSection(sections.valoresRef)}>
+          <Typography
+            textAlign="center"
+            style={{ color: theme.palette.text.primary }}
+          >
+            Valores
+          </Typography>
+        </MenuItem>
+        <MenuItem onClick={() => scrollToSection(sections.faqRef)}>
+          <Typography
+            textAlign="center"
+            style={{ color: theme.palette.text.primary }}
+          >
+            FAQ
+          </Typography>
         </MenuItem>
         {isMobile && (
           <>
             <MenuItem onClick={handleMenuClose}>
-              <Button variant="contained" color="primary" fullWidth>
-                Cadastre-se
-              </Button>
-            </MenuItem>
-            <MenuItem onClick={handleMenuClose}>
-              <Button variant="contained" color="secondary" fullWidth>
-                Login
+              <Button variant="contained" color="secondary" fullWidth onClick={handleRegisterClick}>
+                Entrar
               </Button>
             </MenuItem>
           </>
