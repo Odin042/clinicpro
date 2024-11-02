@@ -19,19 +19,32 @@ export const LogoWrapper = styled.div`
   p {
     margin:  0 0 120px 30px;
   }
+
+  @media (max-width: 768px) {
+    margin: 0 0 0 0;
+  }
 `;
 
 export const LoginWrapper = styled.div`
   display: flex;
-  margin: 0 0 60px 300px;
+  margin: 0 0 60px 100px;
   width: 600px;
   flex-direction: column;
   align-items: flex-start;
   gap: 40px;
+
+  @media (max-width: 768px) {
+    margin: 0 0 60px 0;
+    width: 100%;
+  }
 `;
 
 export const ButtonsForm = styled.div`
   display: flex;
   justify-content: flex-end;
-  margin: 0 340px 0 0;
+  margin: 0 220px 0 0;
+
+  @media (max-width: 768px) {
+    margin: 0 100px 0 0;
+  }
 `;

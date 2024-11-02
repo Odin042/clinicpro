@@ -19,7 +19,7 @@ export const RegisterForm = () => {
             <TextField
               variant="outlined"
               placeholder="Digite seu nome"
-              sx={{ width: "600px" }}
+              sx={{ width: { xs: "100%", md: "600px" } }}
             />
           </S.InputsRegister>
         </S.InputsRow>
@@ -28,7 +28,7 @@ export const RegisterForm = () => {
           <TextField
             variant="outlined"
             placeholder="Digite seu email"
-            sx={{ width: "600px" }}
+            sx={{ width: { xs: "100%", md: "600px" } }}
             type="email"
           />
         </S.InputsRegister>
@@ -39,7 +39,7 @@ export const RegisterForm = () => {
               type="password"
               variant="outlined"
               placeholder="Digite sua senha"
-              sx={{ width: "600px" }}
+              sx={{ width: { xs: "100%", md: "600px" } }}
             />
           </S.InputsRegister>
           <S.InputsRegister>
@@ -48,11 +48,13 @@ export const RegisterForm = () => {
               type="password"
               variant="outlined"
               placeholder="Confirme sua senha"
-              sx={{ width: "600px" }}
+              sx={{ width: { xs: "100%", md: "600px" } }}
             />
           </S.InputsRegister>
         </S.InputsRow>
-        <Button variant="contained">Salvar</Button>
+        <Button variant="contained" sx={{ width: { xs: "100%", md: "200px" } }}>
+          Salvar
+        </Button>
       </S.FormRegister>
     </S.Container>
   );

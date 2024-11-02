@@ -6,10 +6,9 @@ export const WrapperLogin = styled.div`
   align-items: stretch;
   justify-content: center;
   width: 100%;
-  height: 100vh; 
+  min-height: 100vh; 
   background-color: #fff;
   border-radius: 10px;
-
 `;
 
 export const ImageLogin = styled.div`
@@ -21,6 +20,10 @@ export const ImageLogin = styled.div`
     width: 100%;
     height: 100%;
     object-fit: cover; 
+  }
+
+  @media (max-width: 768px) {
+    display: none;
   }
 `;
 
@@ -36,15 +39,24 @@ export const LoginForm = styled.div`
 `;
 
 export const LogoWrapper = styled.div`
-  position: relative;
-  margin: 0 70px 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px; 
+  
   img {
     width: 160px;
     height: auto;
     object-fit: contain;
+    margin-bottom: 10px; 
   }
-  p {
-    margin:  0 0 120px 30px;
+
+  @media (max-width: 768px) {
+    img {
+      width: 120px;
+    }
+    p {
+      margin-top: 10px; 
+    }
   }
 `;
-
