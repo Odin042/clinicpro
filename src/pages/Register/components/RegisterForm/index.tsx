@@ -1,9 +1,53 @@
-import React from "react";
+import { useState } from "react";
 import * as S from "./styles";
 import { Button, TextField, Typography } from "@mui/material";
 import { Speciality } from "./Speciality";
+import { useCreateUser } from "../../hooks/useCreateUser";
+import { toast } from "react-toastify";
 
 export const RegisterForm = () => {
+  const { createUser, loading } = useCreateUser();
+  const [formData, setFormData] = useState({
+    speciality: "",
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSave = async () => {
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("As senhas não coincidem.");
+      return;
+    }
+
+    const { speciality, username, email, password, confirmPassword } = formData;
+
+    try {
+      await createUser({
+        speciality,
+        username,
+        email,
+        password,
+        confirmPassword,
+      });
+      toast.success("Usuário criado com sucesso!");
+      setFormData({
+        speciality: "",
+        username: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <S.Container>
       <Typography variant="h4" sx={{ fontWeight: "bold" }}>
@@ -12,11 +56,19 @@ export const RegisterForm = () => {
       <S.FormRegister>
         <S.InputsRow>
           <S.InputsRegister>
-            <Speciality />
+            <Speciality
+              value={formData.speciality}
+              onChange={(newValue) => {
+                setFormData({ ...formData, speciality: newValue })
+              }}
+            />
           </S.InputsRegister>
           <S.InputsRegister>
             <Typography variant="h6">Nome</Typography>
             <TextField
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
               variant="outlined"
               placeholder="Digite seu nome"
               sx={{ width: { xs: "100%", md: "600px" } }}
@@ -26,6 +78,9 @@ export const RegisterForm = () => {
         <S.InputsRegister>
           <Typography variant="h6">Email</Typography>
           <TextField
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
             variant="outlined"
             placeholder="Digite seu email"
             sx={{ width: { xs: "100%", md: "600px" } }}
@@ -36,6 +91,9 @@ export const RegisterForm = () => {
           <S.InputsRegister>
             <Typography variant="h6">Senha</Typography>
             <TextField
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
               type="password"
               variant="outlined"
               placeholder="Digite sua senha"
@@ -45,6 +103,9 @@ export const RegisterForm = () => {
           <S.InputsRegister>
             <Typography variant="h6">Confirmar Senha</Typography>
             <TextField
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
               type="password"
               variant="outlined"
               placeholder="Confirme sua senha"
@@ -52,8 +113,13 @@ export const RegisterForm = () => {
             />
           </S.InputsRegister>
         </S.InputsRow>
-        <Button variant="contained" sx={{ width: { xs: "100%", md: "200px" } }}>
-          Salvar
+        <Button
+          variant="contained"
+          sx={{ width: { xs: "100%", md: "200px" } }}
+          disabled={loading}
+          onClick={handleSave}
+        >
+          {loading ? "Salvando..." : "Salvar"}
         </Button>
       </S.FormRegister>
     </S.Container>
