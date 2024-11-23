@@ -35,7 +35,7 @@ export const Navbar = ({ sections }) => {
   };
 
   const handleRegisterClick = () => {
-    navigate('/login') 
+    navigate('/register') 
   }
 
   return (
