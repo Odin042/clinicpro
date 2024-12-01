@@ -4,9 +4,11 @@ import { Button, TextField, Typography } from "@mui/material";
 import { Speciality } from "./Speciality";
 import { useCreateUser } from "../../hooks/useCreateUser";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export const RegisterForm = () => {
-  const { createUser, loading } = useCreateUser();
+  const { createUser, loading } = useCreateUser()
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     speciality: "",
     username: "",
@@ -44,9 +46,11 @@ export const RegisterForm = () => {
         confirmPassword: "",
       });
     } catch (err) {
-      console.error(err);
+      console.error("Erro ao criar usuário", err);
     }
-  };
+
+    navigate('/') 
+  }
 
   return (
     <S.Container>
