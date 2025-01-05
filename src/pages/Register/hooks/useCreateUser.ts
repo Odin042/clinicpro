@@ -1,8 +1,8 @@
-import { useState } from "react";
-import axios from "axios";
-import { toast } from "react-toastify";
+import { useState } from "react"
+import axios from "axios"
+import { toast } from "react-toastify"
 
-import "react-toastify/dist/ReactToastify.css";
+import "react-toastify/dist/ReactToastify.css"
 
 interface UserData {
   username: string;
@@ -13,10 +13,10 @@ interface UserData {
 }
 
 export const useCreateUser = () => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false)
 
   const createUser = async (userData: UserData) => {
-    setLoading(true);
+    setLoading(true)
 
     try {
       

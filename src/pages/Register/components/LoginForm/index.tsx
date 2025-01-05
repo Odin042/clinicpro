@@ -1,7 +1,24 @@
-import * as S from "./styles";
-import { Button, Divider, TextField, Typography } from "@mui/material";
+import { useState } from "react"
+import * as S from "./styles"
+import { Button, Divider, TextField, Typography } from "@mui/material"
+import useLogin from "../../hooks/useLoginUser"
+import { useNavigate } from "react-router-dom"
 
 export const LoginForm = ({ onToggleRegister }: any) => {
+  const [email, setEmail] = useState("")
+  const navigate = useNavigate()
+  const [password, setPassword] = useState("")
+  const { login, loading } = useLogin()
+
+  const handleLogin = async () => {
+    try {
+      await login(email, password)
+      navigate('/dashboard') 
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
   return (
     <S.Container>
       <S.LoginWrapper>
@@ -18,6 +35,8 @@ export const LoginForm = ({ onToggleRegister }: any) => {
           label="Email"
           variant="outlined"
           placeholder="Digite seu Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           sx={{
             width: { xs: "80%", md: "600px" },
             margin: { xs: "0 auto", md: "0 0 0 0" },
@@ -37,6 +56,9 @@ export const LoginForm = ({ onToggleRegister }: any) => {
           label="Senha"
           variant="outlined"
           placeholder="Digite sua senha"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           sx={{
             width: { xs: "80%", md: "600px" },
             margin: { xs: "0 auto", md: "50px 0 0 0" },
@@ -48,8 +70,11 @@ export const LoginForm = ({ onToggleRegister }: any) => {
         <Button
           variant="contained"
           color="primary"
+          onClick={handleLogin}
+          disabled={loading || !email || !password}
+          sx={{ width: { xs: "80%" } }}
         >
-          Entrar
+          {loading ? "Entrando..." : "Entrar"}
         </Button>
       </S.ButtonsForm>
       <Divider
@@ -64,12 +89,12 @@ export const LoginForm = ({ onToggleRegister }: any) => {
         color="secondary"
         onClick={onToggleRegister}
         sx={{
-          width: { xs: "80%"},
+          width: { xs: "80%" },
           margin: { xs: "0 0 40px 40px", md: "0 0 0 50px" },
         }}
       >
-        Nao tem uma conta? Cadastre-se
+        Não tem uma conta? Cadastre-se
       </Button>
     </S.Container>
-  );
-};
+  )
+}

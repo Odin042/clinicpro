@@ -1,13 +1,22 @@
-import { useState } from "react";
-import * as S from "./styles";
-import { Button, TextField, Typography } from "@mui/material";
-import { Speciality } from "./Speciality";
-import { useCreateUser } from "../../hooks/useCreateUser";
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react"
+import * as S from "./styles"
+import { Button, TextField, Typography } from "@mui/material"
+import { Speciality } from "./Speciality"
+import { useCreateUser } from "../../hooks/useCreateUser"
+import { toast } from "react-toastify"
+import { useNavigate } from "react-router-dom"
+import { registerFormSchema } from "../../../schemas/RegisterSchema"
+import { ZodError } from "zod"
 
 export const RegisterForm = () => {
   const { createUser, loading } = useCreateUser()
+  const [errors, setErrors] = useState<FormErrors>({
+    speciality: "",
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  })
   const navigate = useNavigate()
   const [formData, setFormData] = useState({
     speciality: "",
@@ -15,21 +24,33 @@ export const RegisterForm = () => {
     email: "",
     password: "",
     confirmPassword: "",
-  });
+  })
+
+  type FormErrors = {
+    speciality?: string;
+    username?: string;
+    email?: string;
+    password?: string;
+    confirmPassword?: string;
+  }
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+    setErrors({ ...errors, [e.target.name]: "" })
   };
 
   const handleSave = async () => {
     if (formData.password !== formData.confirmPassword) {
-      toast.error("As senhas não coincidem.");
+      setErrors({ ...errors, confirmPassword: "As senhas não coincidem." });
       return;
     }
-
-    const { speciality, username, email, password, confirmPassword } = formData;
-
+  
     try {
+
+      registerFormSchema.parse(formData);
+  
+      const { speciality, username, email, password, confirmPassword } = formData;
+  
       await createUser({
         speciality,
         username,
@@ -37,7 +58,9 @@ export const RegisterForm = () => {
         password,
         confirmPassword,
       });
+  
       toast.success("Usuário criado com sucesso!");
+  
       setFormData({
         speciality: "",
         username: "",
@@ -45,11 +68,21 @@ export const RegisterForm = () => {
         password: "",
         confirmPassword: "",
       });
+      setErrors({});
+      navigate("/");
     } catch (err) {
-      console.error("Erro ao criar usuário", err);
+      if (err instanceof ZodError) {
+        const fieldErrors: FormErrors = {};
+        err.errors.forEach((error) => {
+          const fieldName = error.path[0] as keyof FormErrors;
+          fieldErrors[fieldName] = error.message;
+        })
+        setErrors(fieldErrors);
+      } else {
+        console.error("Erro ao criar usuário", err);
+        toast.error("Erro inesperado. Tente novamente.");
+      }
     }
-
-    navigate('/') 
   }
 
   return (
@@ -64,8 +97,12 @@ export const RegisterForm = () => {
               value={formData.speciality}
               onChange={(newValue) => {
                 setFormData({ ...formData, speciality: newValue })
+                setErrors({ ...errors, speciality: "" })
               }}
             />
+            {errors.speciality && (
+              <Typography color="error">{errors.speciality}</Typography>
+            )}
           </S.InputsRegister>
           <S.InputsRegister>
             <Typography variant="h6">Nome</Typography>
@@ -76,6 +113,8 @@ export const RegisterForm = () => {
               variant="outlined"
               placeholder="Digite seu nome"
               sx={{ width: { xs: "100%", md: "600px" } }}
+              error={!!errors.username}
+              helperText={errors.username}
             />
           </S.InputsRegister>
         </S.InputsRow>
@@ -89,6 +128,8 @@ export const RegisterForm = () => {
             placeholder="Digite seu email"
             sx={{ width: { xs: "100%", md: "600px" } }}
             type="email"
+            error={!!errors.email}
+            helperText={errors.email}
           />
         </S.InputsRegister>
         <S.InputsRow>
@@ -102,6 +143,8 @@ export const RegisterForm = () => {
               variant="outlined"
               placeholder="Digite sua senha"
               sx={{ width: { xs: "100%", md: "600px" } }}
+              error={!!errors.password}
+              helperText={errors.password}
             />
           </S.InputsRegister>
           <S.InputsRegister>
@@ -114,6 +157,8 @@ export const RegisterForm = () => {
               variant="outlined"
               placeholder="Confirme sua senha"
               sx={{ width: { xs: "100%", md: "600px" } }}
+              error={!!errors.confirmPassword}
+              helperText={errors.confirmPassword}
             />
           </S.InputsRegister>
         </S.InputsRow>
