@@ -38,6 +38,10 @@ export const Navbar = ({ sections }) => {
     navigate('/register') 
   }
 
+  const handleLoginClick = () => {
+    navigate('/login')
+  }
+
   return (
     <S.Container>
       <S.StyledAppBar>
@@ -99,6 +103,14 @@ export const Navbar = ({ sections }) => {
                 color="secondary"
                 fullWidth
                 onClick={handleRegisterClick}
+              >
+                Registre-se
+              </Button>
+              <Button
+                variant="contained"
+                color="secondary"
+                fullWidth
+                onClick={handleLoginClick}
               >
                 Entrar
               </Button>
@@ -176,7 +188,15 @@ export const Navbar = ({ sections }) => {
                 fullWidth
                 onClick={handleRegisterClick}
               >
-                Entrar
+                Registre-se
+              </Button>
+              <Button
+                variant="contained"
+                color="secondary"
+                fullWidth
+                onClick={handleLoginClick}
+              >
+                Login
               </Button>
             </MenuItem>
           </>
