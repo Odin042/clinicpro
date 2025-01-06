@@ -102,13 +102,14 @@ export const Navbar = ({ sections }) => {
                 variant="contained"
                 color="secondary"
                 fullWidth
+                sx={{ width: "400px" }}
                 onClick={handleRegisterClick}
               >
                 Registre-se
               </Button>
               <Button
                 variant="contained"
-                color="secondary"
+                color="primary"
                 fullWidth
                 onClick={handleLoginClick}
               >
@@ -180,8 +181,7 @@ export const Navbar = ({ sections }) => {
           </Typography>
         </MenuItem>
         {isMobile && (
-          <>
-            <MenuItem onClick={handleMenuClose}>
+            <MenuItem onClick={handleMenuClose} sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
               <Button
                 variant="contained"
                 color="secondary"
@@ -192,14 +192,13 @@ export const Navbar = ({ sections }) => {
               </Button>
               <Button
                 variant="contained"
-                color="secondary"
+                color="primary"
                 fullWidth
                 onClick={handleLoginClick}
               >
                 Login
               </Button>
             </MenuItem>
-          </>
         )}
       </Menu>
     </S.Container>
