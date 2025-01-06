@@ -15,6 +15,7 @@ interface UserData {
 export const useCreateUser = () => {
   const [loading, setLoading] = useState(false)
 
+
   const createUser = async (userData: UserData) => {
     setLoading(true)
 
