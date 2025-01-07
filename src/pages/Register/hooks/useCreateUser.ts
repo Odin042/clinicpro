@@ -10,48 +10,41 @@ interface UserData {
   confirmPassword: string;
   password: string;
   speciality: string;
+  cpf_cnpj: string;
+  register: string;
+  phone: string;
 }
 
 export const useCreateUser = () => {
   const [loading, setLoading] = useState(false)
 
-
-  const createUser = async (userData: UserData) => {
+  const createUser = async (data) => {
     setLoading(true)
-
     try {
-      
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/register`,
-        userData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      toast.success("Usuário criado com sucesso!");
-      return response.data;
-    } catch (err: any) {
-      if (err.response) {
-        console.error("Erro na resposta da API:", err.response.data)
-        console.error("Status:", err.response.status)
-        console.error("Headers:", err.response.headers)
-      } else if (err.request) {
-        console.error("Erro na requisição:", err.request)
-        console.error("Erro geral:", err.message)
+      const response = await fetch("http://localhost:3000/api/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
+
+      if (!response.ok) {
+        throw new Error(`Erro na API: ${response.status}`)
       }
 
-      const errorMessage =
-        err.response?.data?.message || "Erro ao criar usuário.";
-      toast.error(errorMessage);
-      throw new Error(errorMessage);
+      const result = await response.json()
+      console.log("Resposta da API:", result)
+      return result
+    } catch (error) {
+      console.error("Erro na chamada da API:", error)
+      throw error
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
-  return { createUser, loading };
-};
+  return { createUser, loading }
+}
 
 export default useCreateUser;

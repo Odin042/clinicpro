@@ -14,7 +14,9 @@ export const Speciality = ({ value, onChange }) => {
         onChange={(event, newValue) => {
           onChange(newValue)
         }}
-        sx={{ width: 300 }}
+        sx={{
+          width: { xs: "90%", sm: "200%" }
+        }}
         renderInput={(params) => <TextField {...params} />}
       />
     </div>
