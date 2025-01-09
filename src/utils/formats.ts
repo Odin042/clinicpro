@@ -1,27 +1,20 @@
 import { estadosBrasileiros } from "../mocks/states"
 
 export const formatCrm = (value: string): string => {
-  let formattedValue = value.toUpperCase().replace(/[^0-9A-Z/]/g, "")
+  let formattedValue = value.toUpperCase().replace(/[^0-9A-Z]/g, "")
 
-  let [numPart, ufPart] = formattedValue.split("/")
 
-  numPart = numPart?.slice(0, 6) || ""
+  let numPart = formattedValue.replace(/[^0-9]/g, "").slice(0, 6)
 
-  if (numPart.length === 6 && !ufPart) {
-    formattedValue = `${numPart}/`
+
+  let ufPart = formattedValue.slice(numPart.length).replace(/[^A-Z]/g, "").slice(0, 2)
+
+ 
+  if (ufPart && !estadosBrasileiros.includes(ufPart)) {
+    ufPart = ""
   }
 
-  if (ufPart) {
-    ufPart = ufPart.slice(0, 2)
-
-    if (ufPart.length === 2 && !estadosBrasileiros.includes(ufPart)) {
-      ufPart = ""
-    }
-
-    formattedValue = `${numPart}/${ufPart}`
-  }
-
-  return formattedValue
+  return `${numPart}${ufPart}`
 }
 
 export const formatPhone = (value: string) => {
@@ -30,4 +23,21 @@ export const formatPhone = (value: string) => {
     .replace(/^(\d{2})(\d)/, "($1) $2")
     .replace(/(\d{5})(\d)/, "$1-$2")
     .slice(0, 15);
+}
+
+export const formatCpfCnpj = (value: string) => {
+  const digits = value.replace(/\D/g, "");
+
+  if (digits.length <= 11) {
+    return digits
+      .replace(/^(\d{3})(\d)/, "$1.$2")
+      .replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3")
+      .replace(/\.(\d{3})(\d)/, ".$1-$2");
+  } else {
+    return digits
+      .replace(/^(\d{2})(\d)/, "$1.$2")
+      .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
+      .replace(/\.(\d{3})(\d)/, ".$1/$2")
+      .replace(/(\d{4})(\d)/, "$1-$2");
+  }
 }

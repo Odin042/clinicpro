@@ -50,7 +50,7 @@ export const Login = ({ onToggleRegister }: any) => {
           onChange={(e) => setEmail(e.target.value)}
           sx={{
             width: { xs: "80%", md: "600px" },
-            margin: { xs: "0 auto", md: "0 0 0 0" },
+            margin: { xs: "0 0 0 0", md: "0 0 0 0" },
           }}
           fullWidth
         />

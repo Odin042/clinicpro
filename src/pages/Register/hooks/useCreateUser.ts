@@ -1,27 +1,25 @@
-import { useState } from "react"
-import axios from "axios"
+import { useForm, SubmitHandler } from "react-hook-form"
 import { toast } from "react-toastify"
-
 import "react-toastify/dist/ReactToastify.css"
 
 interface UserData {
-  username: string;
-  email: string;
-  confirmPassword: string;
-  password: string;
-  speciality: string;
-  cpf_cnpj: string;
-  register: string;
-  phone: string;
+  username: string
+  email: string
+  confirmPassword: string
+  password: string
+  speciality: string
+  cpf_cnpj: string
+  register: string
+  uf: string
+  phone: string
 }
 
 export const useCreateUser = () => {
-  const [loading, setLoading] = useState(false)
+  const { handleSubmit, register, formState: { errors } } = useForm<UserData>()
 
-  const createUser = async (data) => {
-    setLoading(true)
+  const onSubmit: SubmitHandler<UserData> = async (data) => {
     try {
-      const response = await fetch("http://localhost:3000/api/users", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -34,17 +32,17 @@ export const useCreateUser = () => {
       }
 
       const result = await response.json()
+      toast.success("Usuário criado com sucesso!")
       console.log("Resposta da API:", result)
       return result
     } catch (error) {
       console.error("Erro na chamada da API:", error)
+      toast.error("Erro ao criar usuário. Tente novamente.")
       throw error
-    } finally {
-      setLoading(false)
     }
   }
 
-  return { createUser, loading }
+  return { onSubmit: handleSubmit(onSubmit), register, errors }
 }
 
-export default useCreateUser;
+export default useCreateUser
