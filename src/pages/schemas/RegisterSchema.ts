@@ -11,9 +11,6 @@ const isValidCpfCnpj = (value: string) => {
   return false
 }
 
-const isValidCrm = (value: string) => {
-  return /^\d{6}\/[A-Z]{2}$/.test(value) 
-}
 
 export const registerFormSchema = z
   .object({
@@ -23,12 +20,11 @@ export const registerFormSchema = z
     password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
     confirmPassword: z.string(),
     phone: z.string().min(1, "Telefone obrigatório"),
+    uf: z.string(),
     cpf_cnpj: z.string().refine(isValidCpfCnpj, {
       message: "CPF ou CNPJ inválido",
     }),
-    register: z.string().refine(isValidCrm, {
-      message: "Formato inválido (123456/UF)",
-    }),
+    register: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "As senhas não coincidem",
