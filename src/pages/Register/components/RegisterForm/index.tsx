@@ -1,6 +1,6 @@
-import { Controller, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as S from "./styles";
+import { Controller, useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as S from "./styles"
 import {
   Button,
   TextField,
@@ -10,23 +10,22 @@ import {
   FormControl,
   Select,
   MenuItem,
-} from "@mui/material";
-import { Speciality } from "./Speciality";
-import { useCreateUser } from "../../hooks/useCreateUser";
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
-import { registerFormSchema } from "../../../schemas/RegisterSchema";
-import { estadosBrasileiros } from "../../../../mocks/states";
-import { formatCpfCnpj, formatPhone } from "../../../../utils/formats";
+} from "@mui/material"
+import { Speciality } from "./Speciality"
+import { useCreateUser } from "../../hooks/useCreateUser"
+import { toast } from "react-toastify"
+import { useNavigate } from "react-router-dom"
+import { registerFormSchema } from "../../../schemas/RegisterSchema"
+import { estadosBrasileiros } from "../../../../mocks/states"
+import { formatCpfCnpj, formatPhone } from "../../../../utils/formats"
 
 export const RegisterForm = () => {
-  const { createUser, loading } = useCreateUser();
-  const navigate = useNavigate();
+  const { createUser, loading } = useCreateUser()
+  const navigate = useNavigate()
 
   const {
     control,
     handleSubmit,
-    setValue,
     reset,
     formState: { errors },
   } = useForm({
@@ -45,8 +44,27 @@ export const RegisterForm = () => {
   });
 
   const onSubmit = async (data) => {
+    const {
+      email,
+      password,
+      speciality,
+      username,
+      cpf_cnpj,
+      register,
+      phone,
+      uf,
+    } = data;
+
     try {
-      await createUser(data);
+      await createUser(email, password, {
+        speciality,
+        username,
+        cpf_cnpj,
+        register,
+        phone,
+        uf,
+      });
+
       toast.success("Usuário criado com sucesso");
       reset();
       navigate("/");
@@ -55,7 +73,7 @@ export const RegisterForm = () => {
     }
 
     console.log(data);
-  };
+  }
 
   return (
     <S.Container>

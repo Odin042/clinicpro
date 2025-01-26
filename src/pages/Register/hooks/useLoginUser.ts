@@ -1,42 +1,29 @@
 import { useState } from "react"
-import axios from "axios"
-import { toast } from "react-toastify"
+import { signInWithEmailAndPassword } from "firebase/auth"
+import { auth } from "../../../config/firebasedatabase"
 
-export const useLoginUser = () => {
+const useLogin = () => {
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const login = async (email: string, password: string) => {
     setLoading(true)
+    setError(null)
 
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/login`,
-        { email, password },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      )
-
-      toast.success("Login realizado com sucesso!")
-      const token = response.data.token
-
-
-      localStorage.setItem("token", token)
-
-      return response.data
+      const userCredential = await signInWithEmailAndPassword(auth, email, password)
+      const user = userCredential.user
+      return user
     } catch (err: any) {
-      const errorMessage =
-        err.response?.data?.message || "Erro ao realizar login."
-      toast.error(errorMessage)
-      throw new Error(errorMessage)
+      console.error("Erro ao logar:", err.message)
+      setError(err.message || "Erro ao realizar o login")
+      throw err
     } finally {
       setLoading(false)
     }
   }
 
-  return { login, loading }
+  return { login, loading, error }
 }
 
-export default useLoginUser
+export default useLogin
