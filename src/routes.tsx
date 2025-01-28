@@ -4,6 +4,7 @@ import Home from './pages/Home'
 import { Register } from './pages/Register'
 import { Login } from './pages/Login/LoginForm'
 import Dashboard from './pages/Dashboard'
+import ForgotPassword from './pages/components/ForgotPassword'
 
 
 const AppRoutes: React.FC = () => {
@@ -13,6 +14,7 @@ const AppRoutes: React.FC = () => {
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
     </Router>

@@ -27,6 +27,7 @@ export const RegisterForm = () => {
     control,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(registerFormSchema),
@@ -74,6 +75,10 @@ export const RegisterForm = () => {
 
     console.log(data);
   }
+
+  const cpfCnpjValue = watch("cpf_cnpj")
+
+  const isCnpj = cpfCnpjValue?.replace(/\D/g, "").length === 14
 
   return (
     <S.Container>
@@ -134,6 +139,7 @@ export const RegisterForm = () => {
                   <TextField
                     {...field}
                     label="Registro do conselho"
+                    disabled={isCnpj || loading}
                     variant="outlined"
                     sx={{
                       width: { xs: "90%", sm: "180%", md: "100%" },
