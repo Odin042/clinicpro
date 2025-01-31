@@ -1,6 +1,6 @@
-import { Controller, useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as S from "./styles"
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as S from "./styles";
 import {
   Button,
   TextField,
@@ -10,18 +10,18 @@ import {
   FormControl,
   Select,
   MenuItem,
-} from "@mui/material"
-import { Speciality } from "./Speciality"
-import { useCreateUser } from "../../hooks/useCreateUser"
-import { toast } from "react-toastify"
-import { useNavigate } from "react-router-dom"
-import { registerFormSchema } from "../../../schemas/RegisterSchema"
-import { estadosBrasileiros } from "../../../../mocks/states"
-import { formatCpfCnpj, formatPhone } from "../../../../utils/formats"
+} from "@mui/material";
+import { Speciality } from "./Speciality";
+import { useCreateUser } from "../../hooks/useCreateUser";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { registerFormSchema } from "../../../schemas/RegisterSchema";
+import { estadosBrasileiros } from "../../../../mocks/states";
+import { formatCpfCnpj, formatPhone } from "../../../../utils/formats";
 
 export const RegisterForm = () => {
-  const { createUser, loading } = useCreateUser()
-  const navigate = useNavigate()
+  const { createUser, loading } = useCreateUser();
+  const navigate = useNavigate();
 
   const {
     control,
@@ -74,11 +74,7 @@ export const RegisterForm = () => {
     }
 
     console.log(data);
-  }
-
-  const cpfCnpjValue = watch("cpf_cnpj")
-
-  const isCnpj = cpfCnpjValue?.replace(/\D/g, "").length === 14
+  };
 
   return (
     <S.Container>
@@ -87,14 +83,39 @@ export const RegisterForm = () => {
       </Typography>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Stack spacing={2}>
+          {/* Add your content here */}
+        </Stack>
           <Stack
-            direction={{ xs: "column", sm: "row", md: "row" }}
-            spacing={{ xs: 2, md: 8, xl: 15 }}
+            direction="row"
+            spacing={2}
+            sx={{
+              flexWrap: { xs: "wrap" }, 
+              justifyContent: "space-between",
+              gap: { xs: 2, md: 4 },
+            }}
           >
-            <Stack
-              direction={{ xs: "column", sm: "row", md: "column" }}
-              spacing={{ xs: 2, xl: 5 }}
-            >
+            <Stack sx={{ flex: 1, minWidth: "100%" }}>
+              <Typography variant="h6">CPF ou CNPJ</Typography>
+              <Controller
+                name="cpf_cnpj"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="CPF ou CNPJ"
+                    variant="outlined"
+                    fullWidth
+                    error={!!errors.cpf_cnpj}
+                    helperText={errors.cpf_cnpj?.message}
+                    onChange={(e) =>
+                      field.onChange(formatCpfCnpj(e.target.value))
+                    }
+                  />
+                )}
+              />
+            </Stack>
+
+            <Stack sx={{ flex: 1, minWidth: "100%" }}>
               <Controller
                 name="speciality"
                 control={control}
@@ -106,82 +127,62 @@ export const RegisterForm = () => {
                   />
                 )}
               />
-              <Stack>
-                <Typography variant="h6">CPF ou CNPJ</Typography>
-                <Controller
-                  name="cpf_cnpj"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label="CPF ou CNPJ"
-                      variant="outlined"
-                      sx={{
-                        width: { xs: "90%", sm: "170%", md: "150%" },
-                      }}
-                      error={!!errors.cpf_cnpj}
-                      slotProps={{ htmlInput: { maxLength: 18 } }}
-                      helperText={errors.cpf_cnpj?.message}
-                      onChange={(e) =>
-                        field.onChange(formatCpfCnpj(e.target.value))
-                      }
-                    />
-                  )}
-                />
-              </Stack>
             </Stack>
-            <Stack>
-              <Typography variant="h6">Registro do conselho</Typography>
-              <Controller
-                name="register"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Registro do conselho"
-                    disabled={isCnpj || loading}
-                    variant="outlined"
-                    sx={{
-                      width: { xs: "90%", sm: "180%", md: "100%" },
-                    }}
-                    placeholder="Digite apenas números"
-                    slotProps={{ htmlInput: { maxLength: 6 } }}
-                    error={!!errors.register}
-                    helperText={errors.register?.message}
-                    onChange={(e) => {
-                      const numericValue = e.target.value.replace(/\D/g, "");
-                      field.onChange(numericValue);
-                    }}
-                  />
-                )}
-              />
-            </Stack>
-            <Stack>
-              <Typography variant="h6">UF</Typography>
-              <Controller
-                name="uf"
-                control={control}
-                render={({ field }) => (
-                  <FormControl fullWidth variant="outlined" error={!!errors.uf}>
-                    <InputLabel>UF</InputLabel>
-                    <Select
-                      {...field}
-                      sx={{
-                        width: { xs: "90%", sm: "170%", md: "180%" },
-                      }}
-                      label="UF"
-                    >
-                      {estadosBrasileiros.map((estado) => (
-                        <MenuItem key={estado} value={estado}>
-                          {estado}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                )}
-              />
-            </Stack>
-          </Stack>
+                
+            <Stack
+  direction="row"
+  spacing={2}
+  sx={{
+    flexWrap: { xs: "wrap" },
+    justifyContent: "space-between",
+    gap: { xs: 2, md: 4 },
+  }}
+>
+  <Stack sx={{ flex: 1 }}>
+    <Typography variant="h6">Registro do conselho</Typography>
+    <Controller
+      name="register"
+      control={control}
+      render={({ field }) => (
+        <TextField
+          {...field}
+          label="Registro do conselho"
+          variant="outlined"
+          fullWidth
+          placeholder="Digite apenas números"
+          error={!!errors.register}
+          helperText={errors.register?.message}
+          onChange={(e) => {
+            const numericValue = e.target.value.replace(/\D/g, "")
+            field.onChange(numericValue)
+          }}
+        />
+      )}
+    />
+  </Stack>
+
+  <Stack sx={{ flex: 1 }}>
+    <Typography variant="h6">UF</Typography>
+    <Controller
+      name="uf"
+      control={control}
+      render={({ field }) => (
+        <FormControl fullWidth variant="outlined" error={!!errors.uf}>
+          <InputLabel>UF</InputLabel>
+          <Select {...field} label="UF">
+            {estadosBrasileiros.map((estado) => (
+              <MenuItem key={estado} value={estado}>
+                {estado}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      )}
+    />
+  </Stack>
+</Stack>
+<Stack />
+<Stack />
           <Stack
             direction={{ xs: "column", sm: "row" }}
             spacing={{ xs: 2, sm: 35 }}

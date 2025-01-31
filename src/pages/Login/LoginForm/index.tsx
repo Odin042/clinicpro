@@ -10,7 +10,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../../config/firebasedatabase";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import Logo from "../../../assets/clinic360logo.png";
+import Logo from "../../../assets/clinicpro.png";
 import BannerRegister from "../../../assets/bannerregister.jpg";
 
 interface LoginProps {
@@ -88,9 +88,9 @@ export const Login: React.FC<LoginProps> = ({ onToggleRegister }) => {
           flex: 1,
           padding: { xs: 2, md: 4 },
           maxWidth: "600px",
+          height: "100%",
           margin: "0 auto",
           backgroundColor: "#fff",
-          boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
           borderRadius: "8px",
         }}
       >

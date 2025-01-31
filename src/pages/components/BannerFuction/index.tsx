@@ -15,12 +15,12 @@ export const BannerFuction = () => {
           <img src={Banner} alt="Banner" />
         </S.WrapperImage>
         <S.WrapperTextCenter>
-          <Typography variant="h2">
-            Clinic360: Domine sua clínica e alcance o sucesso financeiro.
+          <Typography variant="h2" sx={{ textAlign: "justify"}}>
+            <strong>Clinic360</strong> domine sua clínica e alcance o sucesso financeiro.
           </Typography>
           <Typography
             variant="h6"
-            sx={{ margin: "30px 0 0 0", textAlign: "start" }}
+            sx={{ margin: "30px 0 0 0", textAlign: "justify" }}
           >
             Cansado de não saber como anda a saúde financeira da sua clínica?
             Com a Clinic360, você terá todas as informações nas suas mãos para

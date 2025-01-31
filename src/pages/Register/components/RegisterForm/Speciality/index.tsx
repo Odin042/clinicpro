@@ -15,7 +15,7 @@ export const Speciality = ({ value, onChange, error, helperText }) => {
           onChange(newValue);
         }}
         sx={{
-          width: { xs: "90%", sm: "200%", md: "80%" },
+          width: { xs: "90%", sm: "200%", md: "150%" },
         }}
         renderInput={(params) => (
           <TextField

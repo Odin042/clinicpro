@@ -4,7 +4,7 @@ import { Login } from "../Login/LoginForm";
 import BannerRegister from "../../assets/bannerregister.jpg";
 import { RegisterForm } from "./components/RegisterForm";
 import { Typography } from "@mui/material";
-import Logo from "../../assets/clinic360logo.png";
+import Logo from "../../assets/clinicpro.png";
 import { useNavigate } from 'react-router-dom'
 
 export const Register = () => {

@@ -21,6 +21,10 @@ export const Title = styled.div`
   justify-content: center;
   width: 50%;
 
+  img {
+    width: 250px;
+  }
+
   @media (max-width: 600px) {
     width: 100%;
   }
