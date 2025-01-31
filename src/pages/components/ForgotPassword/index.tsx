@@ -3,8 +3,7 @@ import { Button, TextField, Typography, Stack } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../../config/firebasedatabase";
 import { sendPasswordResetEmail } from "firebase/auth";
-import Logo from "../../../assets/clinic360logo.png";
-import BannerRegister from "../../../assets/bannerregister.jpg"
+import Logo from "../../../assets/clinicpro.png";
 import { toast } from "react-toastify";
 
 export default function ForgotPassword() {
@@ -57,7 +56,7 @@ export default function ForgotPassword() {
         }}
       >
         <img src={Logo} alt="Logo Clinic360" width="150" />
-        <Typography variant="h6" color="textSecondary">
+        <Typography variant="h6" color="textPrimary">
           Recuperar Senha
         </Typography>
 

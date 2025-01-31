@@ -41,7 +41,7 @@ export const Home = () => {
         <S.ImageCenter>
           <img src={Computer} alt="logo" />
         </S.ImageCenter>
-        <Typography variant="h3">Já pensou o seu consultorio lucrando todos os dias?</Typography>
+        <Typography variant="h3">Já pensou o seu consultório lucrando todos os dias?</Typography>
       </S.WrapperTextCenter>
 
       <div ref={benefitsRef}>

@@ -7,7 +7,7 @@ import {
   Button,
 } from "@mui/material"
 import MenuIcon from "@mui/icons-material/Menu"
-import Logo from "../../assets/clinic360logo.png"
+import Logo from "../../assets/clinicpro.png"
 import * as S from "./styles"
 import { useTheme } from "@mui/material/styles"
 import { useNavigate } from 'react-router-dom'
@@ -161,7 +161,7 @@ export const Navbar = ({ sections }) => {
             textAlign="center"
             style={{ color: theme.palette.text.primary }}
           >
-            O que somos
+            Quem somos
           </Typography>
         </MenuItem>
         <MenuItem onClick={() => scrollToSection(sections.valoresRef)}>

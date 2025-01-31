@@ -2,7 +2,7 @@ import { Button, Card, CardContent, Typography } from '@mui/material'
 import * as S from './styles'
 
 type CardsProps = {
-  color?: string, // Pode ser removido se não for usado
+  color?: string, 
   title: string,
   subtitle: string,
   value: string,
@@ -40,18 +40,17 @@ export const Cards = ({
         alignItems: 'center', 
         borderRadius: '12px',
         backgroundColor: backgroundColor || '#ffffff',
-        padding: '20px 0'  
+        padding: '10px 0'  
       }}>
         <CardContent sx={{ 
-          textAlign: 'center', 
-          padding: '0', 
+          textAlign: 'center',  
           flexGrow: 1,
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
           alignItems: 'center',
         }}>
-          <Typography gutterBottom variant="h5" component="div" sx={{ fontWeight: 'bold', margin: '0', color: titleColor }}>
+          <Typography gutterBottom variant="h5" component="div" sx={{ fontWeight: 'bold', margin: '0 10px', color: titleColor, width: '110%', padding: '10px 20px', textAlign: 'center' }}>
             {title}
           </Typography>
           <Typography variant="body2" sx={{ margin: '10px 0', fontSize: '14px', color: subtitleColor }}>

@@ -10,8 +10,8 @@ export const OfferCard = () => {
         Planos
       </Typography>
       <S.WrapperCards>
-        <Cards  title={'Clinic360'} subtitle={'Perfeito para consultorios pequenos'} value={'R$ 89 / Mês'} benefits={'Acesso a plataforma'}  />
-        <Cards  buttonTextColor='#0A2472' buttonColor='#ffff'benefitsColor='#ffff' valueColor='#ffff' titleColor='#ffff' subtitleColor='#ffff' backgroundColor={'#0A2472'} title={'Business'} subtitle={'Para gerenciar atendimentos de mais de um profissional'} value={'R$ 120 / Mês'} benefits={'Acesso a plataforma'}  />
+        <Cards  title={'PLANO INDIVIDUAL'} subtitle={'Perfeito para clínicas pequenas com apenas um profissional'} value={'R$ 89 / Mês'} benefits={'Acesso a plataforma'}  />
+        <Cards  buttonTextColor='#0A2472' buttonColor='#ffff'benefitsColor='#ffff' valueColor='#ffff' titleColor='#ffff' subtitleColor='#ffff' backgroundColor={'#0A2472'} title={'PLANO MULTI'} subtitle={'Gerenciar o atendimento de varios profissionais'} value={'R$ 120 / Mês'} benefits={'Acesso a plataforma'}  />
       </S.WrapperCards>
     </S.Container>
   )

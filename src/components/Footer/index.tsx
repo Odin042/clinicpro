@@ -1,5 +1,5 @@
 import * as S from './styles'
-import Logo from "../../assets/clinic360logo.png";
+import Logo from "../../assets/clinicpro.png";
 import { Typography } from '@mui/material';
 
 export const Footer = () => {
