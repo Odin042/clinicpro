@@ -1,6 +1,5 @@
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as S from "./styles";
 import {
   Button,
   TextField,
@@ -10,14 +9,17 @@ import {
   FormControl,
   Select,
   MenuItem,
+  Box,
 } from "@mui/material";
 import { Speciality } from "./Speciality";
 import { useCreateUser } from "../../hooks/useCreateUser";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import Logo from "../../../../assets/clinicpro.png";
 import { registerFormSchema } from "../../../schemas/RegisterSchema";
 import { estadosBrasileiros } from "../../../../mocks/states";
 import { formatCpfCnpj, formatPhone } from "../../../../utils/formats";
+import * as S from "./styles";
 
 export const RegisterForm = () => {
   const { createUser, loading } = useCreateUser();
@@ -27,7 +29,6 @@ export const RegisterForm = () => {
     control,
     handleSubmit,
     reset,
-    watch,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(registerFormSchema),
@@ -65,37 +66,110 @@ export const RegisterForm = () => {
         phone,
         uf,
       });
-
       toast.success("Usuário criado com sucesso");
       reset();
       navigate("/");
     } catch (err) {
       toast.error("Erro inesperado. Tente novamente");
     }
-
-    console.log(data);
   };
 
   return (
-    <S.Container>
-      <Typography variant="h4" sx={{ fontWeight: "bold" }}>
-        Cadastro
-      </Typography>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Stack spacing={2}>
-          {/* Add your content here */}
-        </Stack>
-          <Stack
-            direction="row"
-            spacing={2}
-            sx={{
-              flexWrap: { xs: "wrap" }, 
-              justifyContent: "space-between",
-              gap: { xs: 2, md: 4 },
-            }}
-          >
-            <Stack sx={{ flex: 1, minWidth: "100%" }}>
-              <Typography variant="h6">CPF ou CNPJ</Typography>
+    <Stack
+      direction={{ xs: "column", sm: "row" }}
+      sx={{
+        width: "100vw",
+        height: "100vh",
+        overflowY: { xs: "auto", sm: "hidden" },
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <Box
+        sx={{
+          flex: 1,
+          height: "100%",
+          display: { xs: "none", sm: "flex" },
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          bgcolor: "#f5f5f5",
+          px: 4,
+        }}
+      >
+        <img
+          src={Logo}
+          alt="Logo"
+          style={{ maxWidth: 200 }}
+        />
+        <Typography
+          variant="h3"
+          sx={{
+            fontWeight: "bold",
+            mb: 2,
+            textAlign: "center",
+            maxWidth: "500px",
+          }}
+        >
+          Bem-vindo ao Clinic360
+        </Typography>
+        <Typography
+          variant="h6"
+          sx={{
+            textAlign: "center",
+            maxWidth: "500px",
+            mt: 2,
+          }}
+        >
+          Cadastre-se e tenha acesso a um sistema completo de gestão de
+          consultórios. Gerencie pacientes, agendamentos e muito mais com
+          facilidade.
+        </Typography>
+      </Box>
+      <Box
+        sx={{
+          flex: 1,
+          minHeight: "100%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "flex-start",
+          alignItems: "center",
+          bgcolor: "#fff",
+          p: 4,
+          maxWidth: { xs: "100%", sm: "400px" },
+          width: "100%",
+          overflowY: "auto",
+        }}
+      >
+        <Typography
+          variant="h4"
+          align="center"
+          gutterBottom
+          sx={{
+            fontWeight: "bold",
+            mb: 3,
+            mt: { xs: 2, sm: 0 },
+          }}
+        >
+          Cadastro
+        </Typography>
+        <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
+          <Stack spacing={3}>
+            <Controller
+              name="username"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Nome ou Empresa"
+                  fullWidth
+                  error={!!errors.username}
+                  helperText={errors.username?.message}
+                />
+              )}
+            />
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
               <Controller
                 name="cpf_cnpj"
                 control={control}
@@ -103,7 +177,6 @@ export const RegisterForm = () => {
                   <TextField
                     {...field}
                     label="CPF ou CNPJ"
-                    variant="outlined"
                     fullWidth
                     error={!!errors.cpf_cnpj}
                     helperText={errors.cpf_cnpj?.message}
@@ -113,102 +186,6 @@ export const RegisterForm = () => {
                   />
                 )}
               />
-            </Stack>
-
-            <Stack sx={{ flex: 1, minWidth: "100%" }}>
-              <Controller
-                name="speciality"
-                control={control}
-                render={({ field }) => (
-                  <Speciality
-                    {...field}
-                    error={!!errors.speciality}
-                    helperText={errors.speciality?.message}
-                  />
-                )}
-              />
-            </Stack>
-                
-            <Stack
-  direction="row"
-  spacing={2}
-  sx={{
-    flexWrap: { xs: "wrap" },
-    justifyContent: "space-between",
-    gap: { xs: 2, md: 4 },
-  }}
->
-  <Stack sx={{ flex: 1 }}>
-    <Typography variant="h6">Registro do conselho</Typography>
-    <Controller
-      name="register"
-      control={control}
-      render={({ field }) => (
-        <TextField
-          {...field}
-          label="Registro do conselho"
-          variant="outlined"
-          fullWidth
-          placeholder="Digite apenas números"
-          error={!!errors.register}
-          helperText={errors.register?.message}
-          onChange={(e) => {
-            const numericValue = e.target.value.replace(/\D/g, "")
-            field.onChange(numericValue)
-          }}
-        />
-      )}
-    />
-  </Stack>
-
-  <Stack sx={{ flex: 1 }}>
-    <Typography variant="h6">UF</Typography>
-    <Controller
-      name="uf"
-      control={control}
-      render={({ field }) => (
-        <FormControl fullWidth variant="outlined" error={!!errors.uf}>
-          <InputLabel>UF</InputLabel>
-          <Select {...field} label="UF">
-            {estadosBrasileiros.map((estado) => (
-              <MenuItem key={estado} value={estado}>
-                {estado}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      )}
-    />
-  </Stack>
-</Stack>
-<Stack />
-<Stack />
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
-            spacing={{ xs: 2, sm: 35 }}
-          >
-            <Stack>
-              <Typography variant="h6">Nome ou Empresa</Typography>
-              <Controller
-                name="username"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Nome"
-                    fullWidth
-                    variant="outlined"
-                    sx={{
-                      width: { xs: "90%", sm: "200%" },
-                    }}
-                    error={!!errors.username}
-                    helperText={errors.username?.message}
-                  />
-                )}
-              />
-            </Stack>
-            <Stack>
-              <Typography variant="h6">Telefone</Typography>
               <Controller
                 name="phone"
                 control={control}
@@ -217,10 +194,6 @@ export const RegisterForm = () => {
                     {...field}
                     label="Telefone"
                     fullWidth
-                    variant="outlined"
-                    sx={{
-                      width: { xs: "90%" },
-                    }}
                     error={!!errors.phone}
                     helperText={errors.phone?.message}
                     onChange={(e) =>
@@ -230,31 +203,67 @@ export const RegisterForm = () => {
                 )}
               />
             </Stack>
-          </Stack>
-          <Typography variant="h6">E-mail</Typography>
-          <Controller
-            name="email"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Email"
-                fullWidth
-                variant="outlined"
-                sx={{
-                  width: { xs: "90%" },
-                }}
-                error={!!errors.email}
-                helperText={errors.email?.message}
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={2} gap={{ xs: 1, sm: 0 }}>
+              <Controller
+                name="register"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Registro do conselho"
+                    fullWidth
+                    placeholder="Digite apenas números"
+                    error={!!errors.register}
+                    helperText={errors.register?.message}
+                    onChange={(e) => {
+                      const numericValue = e.target.value.replace(/\D/g, "");
+                      field.onChange(numericValue);
+                    }}
+                  />
+                )}
               />
-            )}
-          />
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
-            spacing={{ xs: 2, sm: 20 }}
-          >
-            <Stack>
-              <Typography variant="h6">Senha</Typography>
+              <Controller
+                name="uf"
+                control={control}
+                render={({ field }) => (
+                  <FormControl fullWidth error={!!errors.uf} sx={{ width: {xs: "100%", sm:"50px", md: "130px" } }}>
+                    <InputLabel>UF</InputLabel>
+                    <Select {...field}>
+                      {estadosBrasileiros.map((estado) => (
+                        <MenuItem key={estado} value={estado}>
+                          {estado}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                )}
+              />
+            </Stack>
+            <Controller
+              name="speciality"
+              control={control}
+              render={({ field }) => (
+                <Speciality
+                  {...field}
+                  error={!!errors.speciality}
+                  helperText={errors.speciality?.message}
+                />
+              )}
+            />
+            <Controller
+              name="email"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Email"
+                  fullWidth
+                  error={!!errors.email}
+                  helperText={errors.email?.message}
+                />
+              )}
+            />
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
               <Controller
                 name="password"
                 control={control}
@@ -264,18 +273,11 @@ export const RegisterForm = () => {
                     label="Senha"
                     type="password"
                     fullWidth
-                    variant="outlined"
-                    sx={{
-                      width: { xs: "90%", sm: "150%" },
-                    }}
                     error={!!errors.password}
                     helperText={errors.password?.message}
                   />
                 )}
               />
-            </Stack>
-            <Stack>
-              <Typography variant="h6">Confirme a senha</Typography>
               <Controller
                 name="confirmPassword"
                 control={control}
@@ -285,29 +287,25 @@ export const RegisterForm = () => {
                     label="Confirmar Senha"
                     type="password"
                     fullWidth
-                    sx={{
-                      width: { xs: "90%", sm: "150%" },
-                    }}
-                    variant="outlined"
                     error={!!errors.confirmPassword}
                     helperText={errors.confirmPassword?.message}
                   />
                 )}
               />
             </Stack>
+            <Stack alignItems="center" sx={{ mt: 4 }}>
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                disabled={loading}
+              >
+                {loading ? "Salvando..." : "Salvar"}
+              </Button>
+            </Stack>
           </Stack>
-        </Stack>
-        <Stack alignItems="center" sx={{ mt: 4 }}>
-          <Button
-            type="submit"
-            variant="contained"
-            disabled={loading}
-            sx={{ width: "20%", margin: { xs: "0 20px 0 0", sm: "0 0 0 0" } }}
-          >
-            {loading ? "Salvando..." : "Salvar"}
-          </Button>
-        </Stack>
-      </form>
-    </S.Container>
+        </form>
+      </Box>
+    </Stack>
   );
 };
