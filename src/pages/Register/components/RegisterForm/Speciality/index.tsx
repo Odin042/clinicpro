@@ -6,7 +6,6 @@ export const Speciality = ({ value, onChange, error, helperText }) => {
 
   return (
     <div>
-      <Typography variant="h6">Especialidade</Typography>
       <Autocomplete
         disablePortal
         options={professionData}
@@ -15,11 +14,12 @@ export const Speciality = ({ value, onChange, error, helperText }) => {
           onChange(newValue);
         }}
         sx={{
-          width: { xs: "90%", sm: "200%", md: "150%" },
+          width: { xs: "100%", sm: "200%", md: "100%" },
         }}
         renderInput={(params) => (
           <TextField
             {...params}
+            label="Especialidade"
             error={error}
             helperText={helperText}
           />

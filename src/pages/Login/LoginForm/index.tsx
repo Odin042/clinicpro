@@ -1,27 +1,21 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Button,
-  Divider,
   TextField,
   Typography,
   Stack,
-  Box,
+  Box
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 import { auth } from "../../../config/firebasedatabase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import Logo from "../../../assets/clinicpro.png";
-import BannerRegister from "../../../assets/bannerregister.jpg";
 
-interface LoginProps {
-  onToggleRegister?: () => void;
-}
-
-export const Login: React.FC<LoginProps> = ({ onToggleRegister }) => {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+export const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async () => {
@@ -38,14 +32,8 @@ export const Login: React.FC<LoginProps> = ({ onToggleRegister }) => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       navigate("/dashboard");
-    } catch (err: any) {
-      if (err.code === "auth/user-not-found") {
-        setError("Usuário não encontrado. Verifique o email digitado.");
-      } else if (err.code === "auth/wrong-password") {
-        setError("Senha incorreta. Tente novamente.");
-      } else {
-        setError("Ocorreu um erro inesperado. Tente novamente mais tarde.");
-      }
+    } catch (err) {
+      setError("Erro ao fazer login. Verifique suas credenciais.");
     } finally {
       setLoading(false);
     }
@@ -53,110 +41,102 @@ export const Login: React.FC<LoginProps> = ({ onToggleRegister }) => {
 
   return (
     <Stack
-      direction={{ xs: "column", md: "row" }}
-      justifyContent="center"
-      alignItems="center"
+      direction={{ xs: "column", sm: "row" }}
       sx={{
+        width: "100vw",
         height: "100vh",
-        backgroundColor: "#f5f5f5",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
       }}
     >
       <Box
         sx={{
           flex: 1,
-          display: { xs: "none", md: "flex" },
-          justifyContent: "center",
-          alignItems: "stretch",
           height: "100%",
+          display: { xs: "none", sm: "flex" },
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          bgcolor: "#f5f5f5",
+          px: 4,
         }}
       >
-        <img
-          src={BannerRegister}
-          alt="Imagem de registro"
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
+        <img src={Logo} alt="Logo" style={{ maxWidth: 200 }} />
+        <Typography
+          variant="h3"
+          sx={{
+            fontWeight: "bold",
+            mb: 2,
+            textAlign: "center",
+            maxWidth: "500px",
           }}
-        />
+        >
+          Bem-vindo ao Clinic360
+        </Typography>
+        <Typography
+          variant="h6"
+          sx={{ textAlign: "center", maxWidth: "500px", mt: 2 }}
+        >
+          Faça login para acessar sua conta e gerenciar seus pacientes, agendamentos e muito mais.
+        </Typography>
       </Box>
-
-      <Stack
-        direction="column"
-        alignItems="center"
+      <Box
         sx={{
           flex: 1,
-          padding: { xs: 2, md: 4 },
-          maxWidth: "600px",
-          height: "100%",
-          margin: "0 auto",
-          backgroundColor: "#fff",
-          borderRadius: "8px",
+          minHeight: "100%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "flex-start",
+          alignItems: "center",
+          bgcolor: "#fff",
+          p: 4,
+          maxWidth: { xs: "100%", sm: "400px" },
+          width: "100%",
+          overflowY: "auto",
         }}
       >
-        <Stack alignItems="center" sx={{ mb: 4 }}>
-          <img src={Logo} alt="Logo Clinic360" style={{ maxWidth: "150px" }} />
-          <Typography variant="body2" color="#49504E">
-            Faça seu Login
-          </Typography>
-        </Stack>
-
+        <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: "bold", mb: 3 }}>
+          Login
+        </Typography>
         {error && (
           <Typography color="error" sx={{ mb: 2 }}>
             {error}
           </Typography>
         )}
-
         <TextField
           label="Email"
           variant="outlined"
-          placeholder="Digite seu Email"
+          fullWidth
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          fullWidth
-          error={!!error && !email.includes("@")}
-          helperText={
-            !!error && !email.includes("@") ? "Insira um email válido." : ""
-          }
+          error={!!error && !email.includes("@")} 
+          helperText={!!error && !email.includes("@") ? "Insira um email válido." : ""}
           sx={{ mb: 2 }}
         />
-
         <TextField
           label="Senha"
           variant="outlined"
-          placeholder="Digite sua senha"
           type="password"
+          fullWidth
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          fullWidth
           error={!!error && password.length < 6}
-          helperText={
-            !!error && password.length < 6 ? "Senha muito curta." : ""
-          }
+          helperText={!!error && password.length < 6 ? "Senha muito curta." : ""}
           sx={{ mb: 2 }}
         />
-
-        <Button
-          variant="text"
-          color="primary"
-          onClick={() => navigate("/forgot-password")}
-          sx={{ mb: 2 }}
-        >
+        <Button variant="text" color="primary" onClick={() => navigate("/forgot-password")} sx={{ mb: 2 }}>
           Esqueceu sua senha?
         </Button>
-
         <Button
           variant="contained"
           color="primary"
           onClick={handleLogin}
           disabled={loading || !email || !password}
-          sx={{ mb: 2, width: "100%" }}
+          sx={{ width: "100%", mb: 2 }}
         >
           {loading ? "Entrando..." : "Entrar"}
         </Button>
-
-        <Divider sx={{ width: "100%", mb: 2 }} />
-
         <Button
           variant="contained"
           color="secondary"
@@ -165,7 +145,7 @@ export const Login: React.FC<LoginProps> = ({ onToggleRegister }) => {
         >
           Não tem uma conta? Cadastre-se
         </Button>
-      </Stack>
+      </Box>
     </Stack>
   );
 };
