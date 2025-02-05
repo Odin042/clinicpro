@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { auth } from "../../../config/firebasedatabase";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import Logo from "../../../assets/clinicpro.png";
+import Logo from "../../../assets/clinic360prologo.png";
 
 export const Login = () => {
   const [email, setEmail] = useState("");

@@ -7,7 +7,7 @@ import {
   Button,
 } from "@mui/material"
 import MenuIcon from "@mui/icons-material/Menu"
-import Logo from "../../assets/clinicpro.png"
+import Logo from "../../assets/clinic360prologo.png"
 import * as S from "./styles"
 import { useTheme } from "@mui/material/styles"
 import { useNavigate } from 'react-router-dom'
