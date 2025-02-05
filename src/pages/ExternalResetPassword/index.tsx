@@ -3,7 +3,7 @@ import { Button, TextField, Typography, Stack } from "@mui/material"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { auth } from "../../config/firebasedatabase"
 import { verifyPasswordResetCode, confirmPasswordReset } from "firebase/auth"
-import Logo from "../../assets/clinicpro.png"
+import Logo from "../../assets/clinic360prologo.png"
 import { toast } from "react-toastify"
 
 export default function ResetPassword() {
