@@ -15,11 +15,11 @@ import { Speciality } from "./Speciality";
 import { useCreateUser } from "../../hooks/useCreateUser";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import Logo from "../../../../assets/clinicpro.png";
+import Logo from "../../../../assets/clinic360prologo.png";
 import { registerFormSchema } from "../../../schemas/RegisterSchema";
 import { estadosBrasileiros } from "../../../../mocks/states";
 import { formatCpfCnpj, formatPhone } from "../../../../utils/formats";
-import * as S from "./styles";
+
 
 export const RegisterForm = () => {
   const { createUser, loading } = useCreateUser();

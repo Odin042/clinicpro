@@ -2,7 +2,7 @@ import * as S from "./styles";
 import { useNavigate } from "react-router-dom";
 import { Button, Typography } from "@mui/material";
 import BannerImg from "../../../assets/banner.jpg";
-import BannerTitleImg from "../../../assets/clinicpro.png"
+import BannerTitleImg from "../../../assets/clinic360prologo.png"
 
 export const Banner = () => {
   const navigate = useNavigate();
