@@ -8,6 +8,7 @@ import ForgotPassword from './pages/components/ForgotPassword'
 import ResetPassword from './pages/ExternalResetPassword'
 
 
+
 const AppRoutes: React.FC = () => {
   return (
     <Router>
