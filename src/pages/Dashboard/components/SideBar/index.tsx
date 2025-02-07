@@ -12,7 +12,6 @@ import {
   useMediaQuery
 } from "@mui/material"
 import { ChevronLeft, Menu, Home } from "@mui/icons-material"
-import PeopleAltIcon from "@mui/icons-material/PeopleAlt"
 import EditCalendarIcon from "@mui/icons-material/EditCalendar"
 import ExitToAppIcon from "@mui/icons-material/ExitToApp"
 import logo from "../../../../assets/clinic360prowhite.png"
@@ -101,12 +100,6 @@ const SideBar = ({ setActiveComponent, onToggle }: any) => {
                 <ListItemButton onClick={() => { setActiveComponent("home"); if (isMobile) toggleDrawer() }}>
                   <Home sx={{ color: "white" }} />
                   {open && <ListItemText primary="Inicio" sx={{ ml: 2, color: "white" }} />}
-                </ListItemButton>
-              </ListItem>
-              <ListItem disablePadding>
-                <ListItemButton onClick={() => { setActiveComponent("PatientRegistration"); if (isMobile) toggleDrawer() }}>
-                  <PeopleAltIcon sx={{ color: "white" }} />
-                  {open && <ListItemText primary="Cadastro de pacientes" sx={{ ml: 2, color: "white" }} />}
                 </ListItemButton>
               </ListItem>
               <ListItem disablePadding>

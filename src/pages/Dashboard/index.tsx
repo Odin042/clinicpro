@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Stack } from "@mui/material";
 import SideBar from "./components/SideBar";
-import PatientRegistration from "./components/PatientRegistration";
+import Home from "./components/Home";
 
 export const Dashboard = () => {
   const [activeComponent, setActiveComponent] = useState("home");
@@ -9,8 +9,8 @@ export const Dashboard = () => {
 
   const renderComponent = () => {
     switch (activeComponent) {
-      case "PatientRegistration":
-        return <PatientRegistration />;
+      case "home":
+        return <Home />;
       default:
         return null
     }
