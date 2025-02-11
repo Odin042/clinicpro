@@ -16,6 +16,7 @@ import EmailIcon from "@mui/icons-material/Email";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import PatientRegistrationModal from "./components/PatientResgistrationModal";
+import useUserByEmail from "../../hook/useGetUsers";
 
 const appointmentsMock = [
   {
@@ -49,7 +50,17 @@ const appointmentsMock = [
 ];
 
 const Home = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [email, setEmail] = useState(() => {
+    return localStorage.getItem("userEmail") || "";
+  })
+  const { user, loading, error, refetch } = useUserByEmail(email)
+
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    refetch()
+  }
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -94,9 +105,9 @@ const Home = () => {
             />
         </Box>
         <Box>
-          <Typography variant="h6">João Carlos Cavalcante</Typography>
+          <Typography variant="h6">{user?.username}</Typography>
           <Typography variant="body2" color="textSecondary">
-            Nutrição & Desempenho
+            {user?.speciality}
           </Typography>
         </Box>
         <Button variant="contained" fullWidth>
@@ -122,7 +133,7 @@ const Home = () => {
             fontWeight="bold"
             sx={{ fontWeight: "bold", color: "#00008B" }}
           >
-            Olá, João Carlos. Boas-vindas ao Clinic360Pro
+            Olá, {user?.username}. Boas-vindas ao Clinic360Pro
           </Typography>
           <TextField
             size="medium"
