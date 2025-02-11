@@ -56,13 +56,6 @@ const Home = () => {
   })
   const { user, loading, error, refetch } = useUserByEmail(email)
 
-  console.log(user)
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    refetch()
-  }
-
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };
