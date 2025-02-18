@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react"
 import {
   Stack,
   Box,
@@ -8,15 +8,15 @@ import {
   Divider,
   Avatar,
   IconButton,
-} from "@mui/material";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import PeopleIcon from "@mui/icons-material/People";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import EmailIcon from "@mui/icons-material/Email";
-import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
-import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
-import PatientRegistrationModal from "./components/PatientResgistrationModal";
-import useUserByEmail from "../../hook/useGetUsers";
+} from "@mui/material"
+import PersonAddIcon from "@mui/icons-material/PersonAdd"
+import PeopleIcon from "@mui/icons-material/People"
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday"
+import EmailIcon from "@mui/icons-material/Email"
+import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline"
+import PersonOutlineIcon from "@mui/icons-material/PersonOutline"
+import PatientRegistrationModal from "./components/PatientResgistrationModal"
+import { useGetUsers } from "../../../hook/useGetUsers"
 
 const appointmentsMock = [
   {
@@ -47,28 +47,39 @@ const appointmentsMock = [
     time: "14:00",
     type: "Novo",
   },
-];
+]
 
 const Home = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [email, setEmail] = useState(() => {
-    return localStorage.getItem("userEmail") || "";
-  })
-  const { user, loading, error, refetch } = useUserByEmail(email)
+  const [user, setUser] = useState(null)
+  
+  
 
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const data = await useGetUsers();
+        setUser(data);
+      } catch (err) {
+        console.error("Erro ao buscar dados do usuário:", err);
+        setError("Erro ao carregar os dados do usuário.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    refetch()
-  }
+    fetchUser();
+  }, [])
+
+  console.log(user)
 
   const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
+    setIsModalOpen(true)
+  }
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
+    setIsModalOpen(false)
+  }
 
   return (
     <Stack spacing={2} direction="row" sx={{ height: "100%", width: "100%" }}>
@@ -93,7 +104,7 @@ const Home = () => {
         >
             <Box
               component="img"
-              src={'https://m.media-amazon.com/images/I/61V0JvfDTaL._AC_UF1000,1000_QL80_.jpg'}
+              src={''}
               alt="Logo"
               sx={{
                 width: 200,
@@ -276,7 +287,7 @@ const Home = () => {
         </Box>
       </Stack>
     </Stack>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home
