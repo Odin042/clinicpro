@@ -53,7 +53,6 @@ const Home = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [user, setUser] = useState(null)
   
-  
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -61,17 +60,12 @@ const Home = () => {
         const data = await useGetUsers();
         setUser(data);
       } catch (err) {
-        console.error("Erro ao buscar dados do usuário:", err);
-        setError("Erro ao carregar os dados do usuário.");
-      } finally {
-        setLoading(false);
-      }
-    };
+        console.error("Erro ao buscar dados do usuário:", err)
+      } 
+    }
 
     fetchUser();
   }, [])
-
-  console.log(user)
 
   const handleOpenModal = () => {
     setIsModalOpen(true)
