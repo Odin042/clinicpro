@@ -20,7 +20,6 @@ import { registerFormSchema } from "../../../schemas/RegisterSchema";
 import { estadosBrasileiros } from "../../../../mocks/states";
 import { formatCpfCnpj, formatPhone } from "../../../../utils/formats";
 
-
 export const RegisterForm = () => {
   const { createUser, loading } = useCreateUser();
   const navigate = useNavigate();
@@ -30,6 +29,7 @@ export const RegisterForm = () => {
     handleSubmit,
     reset,
     formState: { errors },
+    trigger,
   } = useForm({
     resolver: zodResolver(registerFormSchema),
     defaultValues: {
@@ -40,6 +40,7 @@ export const RegisterForm = () => {
       password: "",
       confirmPassword: "",
       cpf_cnpj: "",
+      gender: "",
       register: "",
       phone: "",
     },
@@ -52,20 +53,29 @@ export const RegisterForm = () => {
       speciality,
       username,
       cpf_cnpj,
+      gender,
       register,
       phone,
       uf,
     } = data;
+
+    const isValid = await trigger();
+    if (!isValid) {
+      toast.error("Preencha todos os campos corretamente.");
+      return;
+    }
 
     try {
       await createUser(email, password, {
         speciality,
         username,
         cpf_cnpj,
+        gender,
         register,
         phone,
         uf,
       });
+
       toast.success("Usuário criado com sucesso");
       reset();
       navigate("/");
@@ -98,11 +108,7 @@ export const RegisterForm = () => {
           px: 4,
         }}
       >
-        <img
-          src={Logo}
-          alt="Logo"
-          style={{ maxWidth: 200 }}
-        />
+        <img src={Logo} alt="Logo" style={{ maxWidth: 200 }} />
         <Typography
           variant="h3"
           sx={{
@@ -162,7 +168,7 @@ export const RegisterForm = () => {
               render={({ field }) => (
                 <TextField
                   {...field}
-                  label="Nome ou Empresa"
+                  label="Nome"
                   fullWidth
                   error={!!errors.username}
                   helperText={errors.username?.message}
@@ -203,7 +209,27 @@ export const RegisterForm = () => {
                 )}
               />
             </Stack>
-            <Stack direction={{ xs: "column", sm: "row" }} spacing={2} gap={{ xs: 1, sm: 0 }}>
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              spacing={2}
+              gap={{ xs: 1, sm: 0 }}
+            >
+              <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label">Sexo</InputLabel>
+                <Select
+                  label="Sexo"
+                >
+                  <MenuItem value={10}>Masculino</MenuItem>
+                  <MenuItem value={20}>Feminino</MenuItem>
+                  <MenuItem value={30}>Prefiro não responder</MenuItem>
+                </Select>
+              </FormControl>
+            </Stack>
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              spacing={2}
+              gap={{ xs: 1, sm: 0 }}
+            >
               <Controller
                 name="register"
                 control={control}
@@ -226,7 +252,11 @@ export const RegisterForm = () => {
                 name="uf"
                 control={control}
                 render={({ field }) => (
-                  <FormControl fullWidth error={!!errors.uf} sx={{ width: {xs: "100%", sm:"50px", md: "130px" } }}>
+                  <FormControl
+                    fullWidth
+                    error={!!errors.uf}
+                    sx={{ width: { xs: "100%", sm: "50px", md: "130px" } }}
+                  >
                     <InputLabel>UF</InputLabel>
                     <Select {...field}>
                       {estadosBrasileiros.map((estado) => (
