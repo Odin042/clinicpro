@@ -59,12 +59,6 @@ export const RegisterForm = () => {
       uf,
     } = data;
 
-    const isValid = await trigger();
-    if (!isValid) {
-      toast.error("Preencha todos os campos corretamente.");
-      return;
-    }
-
     try {
       await createUser(email, password, {
         speciality,
@@ -85,6 +79,7 @@ export const RegisterForm = () => {
   };
 
   return (
+    <form onSubmit={handleSubmit(onSubmit)}>
     <Stack
       direction={{ xs: "column", sm: "row" }}
       sx={{
@@ -160,7 +155,6 @@ export const RegisterForm = () => {
         >
           Cadastro
         </Typography>
-        <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
           <Stack spacing={3}>
             <Controller
               name="username"
@@ -209,22 +203,22 @@ export const RegisterForm = () => {
                 )}
               />
             </Stack>
-            <Stack
-              direction={{ xs: "column", sm: "row" }}
-              spacing={2}
-              gap={{ xs: 1, sm: 0 }}
-            >
-              <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Sexo</InputLabel>
-                <Select
-                  label="Sexo"
-                >
-                  <MenuItem value={10}>Masculino</MenuItem>
-                  <MenuItem value={20}>Feminino</MenuItem>
-                  <MenuItem value={30}>Prefiro não responder</MenuItem>
-                </Select>
-              </FormControl>
-            </Stack>
+            <Controller
+              name="gender"
+              control={control}
+              render={({ field }) => (
+                <FormControl fullWidth error={!!errors.gender}>
+                  <InputLabel id="gender-label">Sexo</InputLabel>
+                  <Select {...field} labelId="gender-label" label="Sexo">
+                    <MenuItem value="Masculino">Masculino</MenuItem>
+                    <MenuItem value="Feminino">Feminino</MenuItem>
+                    <MenuItem value="Prefiro não responder">
+                      Prefiro não responder
+                    </MenuItem>
+                  </Select>
+                </FormControl>
+              )}
+            />
             <Stack
               direction={{ xs: "column", sm: "row" }}
               spacing={2}
@@ -334,8 +328,8 @@ export const RegisterForm = () => {
               </Button>
             </Stack>
           </Stack>
-        </form>
       </Box>
     </Stack>
+    </form>
   );
 };
