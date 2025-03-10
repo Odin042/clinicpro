@@ -21,6 +21,7 @@ export const registerFormSchema = z
     confirmPassword: z.string(),
     phone: z.string().min(1, "Telefone obrigatório."),
     uf: z.string(),
+    gender: z.string(),
     cpf_cnpj: z.string().refine(isValidCpfCnpj, {
       message: "CPF ou CNPJ inválido.",
     }),
