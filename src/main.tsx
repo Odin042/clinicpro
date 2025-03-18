@@ -6,6 +6,7 @@ import theme from "./styles/themes"
 import { ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import AppRoutes from "./routes"
+import { AuthProvider } from "./AuthContext"
 
 
 
@@ -23,6 +24,8 @@ const root = ReactDOM.createRoot(document.getElementById("root")!)
 
 root.render(
   <React.StrictMode>
+    <AuthProvider>
         <Main />
+    </AuthProvider>
   </React.StrictMode>
 )
