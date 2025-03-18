@@ -72,7 +72,7 @@ export const RegisterForm = () => {
 
       toast.success("Usuário criado com sucesso");
       reset();
-      navigate("/");
+      navigate("/dashboard");
     } catch (err) {
       toast.error("Erro inesperado. Tente novamente");
     }

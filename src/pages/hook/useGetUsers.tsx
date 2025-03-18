@@ -10,7 +10,7 @@ export async function useGetUsers() {
 
   const token = await currentUser.getIdToken();
 
-  const response = await axios.get("https://clinic360-backend-dev.up.railway.app/user", {
+  const response = await axios.get(`${import.meta.env.VITE_API_URL}/user`, {
     headers: {
       Authorization: `Bearer ${token}`
     }

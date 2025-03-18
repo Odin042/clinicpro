@@ -37,7 +37,6 @@ export const useCreateUser = (): UseCreateUserReturn => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          uid: user.uid,
           email: user.email,
           password,
           ...additionalData,
