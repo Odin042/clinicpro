@@ -37,6 +37,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [backendUser, setBackendUser] = useState<BackendUserData | null>(null)
   const [loading, setLoading] = useState(true)
 
+  console.log(import.meta.env.VITE_API_URL)
+
   useEffect(() => {
     const auth = getAuth()
 
@@ -66,7 +68,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         )
         
         setBackendUser(response.data)
-        console.log(import.meta.env.VITE_API_URL)
       } catch (err) {
         console.error("Erro ao buscar dados do usuário no back-end:", err)
         setBackendUser(null)
@@ -77,6 +78,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     return () => unsubscribe()
   }, [])
+
+
 
   return (
     <AuthContext.Provider value={{ firebaseUser, backendUser, loading }}>
