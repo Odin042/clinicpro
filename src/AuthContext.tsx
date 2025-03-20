@@ -66,6 +66,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         )
         
         setBackendUser(response.data)
+        console.log(import.meta.env.VITE_API_URL)
       } catch (err) {
         console.error("Erro ao buscar dados do usuário no back-end:", err)
         setBackendUser(null)
