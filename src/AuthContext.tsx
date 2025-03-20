@@ -37,8 +37,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [backendUser, setBackendUser] = useState<BackendUserData | null>(null)
   const [loading, setLoading] = useState(true)
 
-  console.log(import.meta.env.VITE_API_URL)
-
   useEffect(() => {
     const auth = getAuth()
 
@@ -57,7 +55,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       try {
 
-        const token = await user.getIdToken()
+        const token = await user.getIdToken(true)
         const response = await axios.get(
           (`${import.meta.env.VITE_API_URL}/user`),
           {
