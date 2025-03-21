@@ -78,6 +78,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [])
 
   console.log("API URL:", import.meta.env.VITE_API_URL)
+  console.log('Database URL:', process.env.DATABASE_URL)
 
   return (
     <AuthContext.Provider value={{ firebaseUser, backendUser, loading }}>
