@@ -77,7 +77,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     return () => unsubscribe()
   }, [])
 
-
+  console.log("API URL:", import.meta.env.VITE_API_URL)
 
   return (
     <AuthContext.Provider value={{ firebaseUser, backendUser, loading }}>
