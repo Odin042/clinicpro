@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Stack,
   Box,
@@ -8,6 +8,7 @@ import {
   Divider,
   Avatar,
   IconButton,
+  Chip,
 } from "@mui/material";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import PeopleIcon from "@mui/icons-material/People";
@@ -16,48 +17,33 @@ import EmailIcon from "@mui/icons-material/Email";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import PatientRegistrationModal from "./components/PatientResgistrationModal";
+import { useGetUsers } from "../../../hook/useGetUsers";
+import { AuthContext } from "../../../../AuthContext";
+import { ControlPointSharp } from "@mui/icons-material";
+import AppointmentModal from "./components/AppointmentsModal";
+import useGetAppointments from "../../../hook/useGetAppointments";
 
-const appointmentsMock = [
-  {
-    id: 1,
-    name: "Maria Silva",
-    date: "07/02/2025",
-    time: "10:00",
-    type: "Retorno",
-  },
-  {
-    id: 2,
-    name: "João Santos",
-    date: "07/02/2025",
-    time: "11:00",
-    type: "Novo",
-  },
-  {
-    id: 3,
-    name: "Ana Souza",
-    date: "08/02/2025",
-    time: "09:30",
-    type: "Retorno",
-  },
-  {
-    id: 4,
-    name: "Carlos Mendes",
-    date: "08/02/2025",
-    time: "14:00",
-    type: "Novo",
-  },
-];
+import { format } from "date-fns";
+import useGetPatient from "../../../hook/useGetPatient";
 
 const Home = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPatientResgistrationModalOpen, setPatientResgistrationModalOpen] =
+    useState(false);
+  const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
+  const { firebaseUser, backendUser, loading } = useContext(AuthContext);
+  const { appointments, loading: loadingAppointments } = useGetAppointments();
+  const { patients, loading: loadingPatients } = useGetPatient();
 
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
+  const getPatientNameById = (id: number) => {
+    const foundPatient = patients.find((p) => p.id === id);
+    return foundPatient ? foundPatient.name : "Paciente não encontrado";
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
+  const handleOpenModal = () => setPatientResgistrationModalOpen(true);
+  const handleCloseModal = () => setPatientResgistrationModalOpen(false);
+
+  const handleOpenAppointmentModal = () => setIsAppointmentModalOpen(true);
+  const handleCloseAppointmentModal = () => setIsAppointmentModalOpen(false);
 
   return (
     <Stack spacing={2} direction="row" sx={{ height: "100%", width: "100%" }}>
@@ -80,23 +66,23 @@ const Home = () => {
             gap: 1,
           }}
         >
-            <Box
-              component="img"
-              src={'https://m.media-amazon.com/images/I/61V0JvfDTaL._AC_UF1000,1000_QL80_.jpg'}
-              alt="Logo"
-              sx={{
-                width: 200,
-                height: 300,
-                borderRadius: "10%",
-                objectFit: "cover",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-              }}
-            />
+          <Box
+            component="img"
+            src={""}
+            alt="Logo"
+            sx={{
+              width: 200,
+              height: 300,
+              borderRadius: "10%",
+              objectFit: "cover",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+            }}
+          />
         </Box>
         <Box>
-          <Typography variant="h6">João Carlos Cavalcante</Typography>
+          <Typography variant="h6">{backendUser?.username}</Typography>
           <Typography variant="body2" color="textSecondary">
-            Nutrição & Desempenho
+            {backendUser?.speciality}
           </Typography>
         </Box>
         <Button variant="contained" fullWidth>
@@ -104,7 +90,6 @@ const Home = () => {
         </Button>
         <Divider />
       </Stack>
-
       <Stack flex={1} spacing={2}>
         <Stack
           spacing={2}
@@ -122,7 +107,7 @@ const Home = () => {
             fontWeight="bold"
             sx={{ fontWeight: "bold", color: "#00008B" }}
           >
-            Olá, João Carlos. Boas-vindas ao Clinic360Pro
+            Olá, {backendUser?.username}. Boas-vindas ao Clinic360Pro
           </Typography>
           <TextField
             size="medium"
@@ -155,12 +140,10 @@ const Home = () => {
             </Button>
           </Stack>
         </Stack>
-
         <PatientRegistrationModal
-          open={isModalOpen}
+          open={isPatientResgistrationModalOpen}
           onClose={handleCloseModal}
         />
-
         <Stack spacing={2} sx={{ p: 1 }}>
           <Stack
             sx={{
@@ -181,70 +164,109 @@ const Home = () => {
               </Typography>
               <Stack direction="row" spacing={1}>
                 <Button variant="text">Ver toda agenda</Button>
-                <Button variant="contained" color="primary">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleOpenAppointmentModal}
+                >
                   Novo agendamento
                 </Button>
               </Stack>
             </Stack>
             <Divider />
-
-            {appointmentsMock.length === 0 ? (
+            <AppointmentModal
+              open={isAppointmentModalOpen}
+              onClose={handleCloseAppointmentModal}
+            />
+            {appointments.length === 0 ? (
               <Typography variant="body2" color="textSecondary">
                 Nenhum agendamento para hoje.
               </Typography>
             ) : (
               <Stack spacing={1}>
-                {appointmentsMock.map((appointment) => (
-                  <Box
-                    key={appointment.id}
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      p: 1,
-                      bgcolor: "#f9f9f9",
-                      borderRadius: 2,
-                      boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
-                    }}
-                  >
-                    <Stack direction="row" alignItems="center" spacing={1}>
-                      <Avatar>
-                        {appointment.name
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")}
-                      </Avatar>
-                      <Stack>
-                        <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-                          {appointment.name}
-                        </Typography>
-                        <Typography variant="body2" color="textSecondary">
-                          {appointment.date} - {appointment.time}
-                        </Typography>
-                        <Typography variant="body2" color="textSecondary">
-                          {appointment.type}
-                        </Typography>
+                {appointments.map((appointment) => {
+                  const patientName = getPatientNameById(
+                    appointment.patient_id
+                  );
+                  const start = format(
+                    new Date(appointment.start_time),
+                    "dd/MM/yyyy HH:mm"
+                  );
+                  const end = format(
+                    new Date(appointment.end_time),
+                    "dd/MM/yyyy HH:mm"
+                  );
+                  return (
+                    <Box
+                      key={appointment.id}
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        p: 1,
+                        bgcolor: "#f9f9f9",
+                        borderRadius: 2,
+                        boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
+                      }}
+                    >
+                      <Stack direction="row" alignItems="center" spacing={1}>
+                        <Avatar>
+                          {patientName
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")}
+                        </Avatar>
+                        <Stack>
+                          <Typography
+                            variant="body1"
+                            sx={{ fontWeight: "bold" }}
+                          >
+                            {patientName}
+                          </Typography>
+                          <Typography variant="body2" color="textSecondary">
+                            {start} - {end}
+                          </Typography>
+                          <Typography variant="body2" color="textSecondary">
+                            <Chip
+                              label={appointment.service}
+                              variant="outlined"
+                              sx={{
+                                borderColor:
+                                  appointment.service === "CONSULTATION"
+                                    ? "#4CAF50" 
+                                    : appointment.service === "RETURN"
+                                    ? "#FF9800" 
+                                    : "#2196F3", 
+                                color:
+                                  appointment.service === "CONSULTATION"
+                                    ? "#4CAF50"
+                                    : appointment.service === "RETURN"
+                                    ? "#FF9800"
+                                    : "#2196F3",
+                              }}
+                            />
+                          </Typography>
+                        </Stack>
                       </Stack>
-                    </Stack>
-                    <Stack direction="row" spacing={1}>
-                      <IconButton>
-                        <EmailIcon />
-                      </IconButton>
-                      <IconButton>
-                        <ChatBubbleOutlineIcon />
-                      </IconButton>
-                      <IconButton>
-                        <PersonOutlineIcon />
-                      </IconButton>
-                    </Stack>
-                  </Box>
-                ))}
+                      <Stack direction="row" spacing={1}>
+                        <IconButton>
+                          <EmailIcon />
+                        </IconButton>
+                        <IconButton>
+                          <ChatBubbleOutlineIcon />
+                        </IconButton>
+                        <IconButton>
+                          <PersonOutlineIcon />
+                        </IconButton>
+                      </Stack>
+                    </Box>
+                  );
+                })}
               </Stack>
             )}
           </Stack>
         </Stack>
       </Stack>
-
       <Stack
         spacing={2}
         sx={{

@@ -20,7 +20,6 @@ import { registerFormSchema } from "../../../schemas/RegisterSchema";
 import { estadosBrasileiros } from "../../../../mocks/states";
 import { formatCpfCnpj, formatPhone } from "../../../../utils/formats";
 
-
 export const RegisterForm = () => {
   const { createUser, loading } = useCreateUser();
   const navigate = useNavigate();
@@ -30,6 +29,7 @@ export const RegisterForm = () => {
     handleSubmit,
     reset,
     formState: { errors },
+    trigger,
   } = useForm({
     resolver: zodResolver(registerFormSchema),
     defaultValues: {
@@ -40,6 +40,7 @@ export const RegisterForm = () => {
       password: "",
       confirmPassword: "",
       cpf_cnpj: "",
+      gender: "",
       register: "",
       phone: "",
     },
@@ -52,6 +53,7 @@ export const RegisterForm = () => {
       speciality,
       username,
       cpf_cnpj,
+      gender,
       register,
       phone,
       uf,
@@ -62,19 +64,22 @@ export const RegisterForm = () => {
         speciality,
         username,
         cpf_cnpj,
+        gender,
         register,
         phone,
         uf,
       });
+
       toast.success("Usuário criado com sucesso");
       reset();
-      navigate("/");
+      navigate("/dashboard");
     } catch (err) {
       toast.error("Erro inesperado. Tente novamente");
     }
   };
 
   return (
+    <form onSubmit={handleSubmit(onSubmit)}>
     <Stack
       direction={{ xs: "column", sm: "row" }}
       sx={{
@@ -98,11 +103,7 @@ export const RegisterForm = () => {
           px: 4,
         }}
       >
-        <img
-          src={Logo}
-          alt="Logo"
-          style={{ maxWidth: 200 }}
-        />
+        <img src={Logo} alt="Logo" style={{ maxWidth: 200 }} />
         <Typography
           variant="h3"
           sx={{
@@ -154,7 +155,6 @@ export const RegisterForm = () => {
         >
           Cadastro
         </Typography>
-        <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
           <Stack spacing={3}>
             <Controller
               name="username"
@@ -162,7 +162,7 @@ export const RegisterForm = () => {
               render={({ field }) => (
                 <TextField
                   {...field}
-                  label="Nome ou Empresa"
+                  label="Nome"
                   fullWidth
                   error={!!errors.username}
                   helperText={errors.username?.message}
@@ -203,7 +203,27 @@ export const RegisterForm = () => {
                 )}
               />
             </Stack>
-            <Stack direction={{ xs: "column", sm: "row" }} spacing={2} gap={{ xs: 1, sm: 0 }}>
+            <Controller
+              name="gender"
+              control={control}
+              render={({ field }) => (
+                <FormControl fullWidth error={!!errors.gender}>
+                  <InputLabel id="gender-label">Sexo</InputLabel>
+                  <Select {...field} labelId="gender-label" label="Sexo">
+                    <MenuItem value="Masculino">Masculino</MenuItem>
+                    <MenuItem value="Feminino">Feminino</MenuItem>
+                    <MenuItem value="Prefiro não responder">
+                      Prefiro não responder
+                    </MenuItem>
+                  </Select>
+                </FormControl>
+              )}
+            />
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              spacing={2}
+              gap={{ xs: 1, sm: 0 }}
+            >
               <Controller
                 name="register"
                 control={control}
@@ -226,7 +246,11 @@ export const RegisterForm = () => {
                 name="uf"
                 control={control}
                 render={({ field }) => (
-                  <FormControl fullWidth error={!!errors.uf} sx={{ width: {xs: "100%", sm:"50px", md: "130px" } }}>
+                  <FormControl
+                    fullWidth
+                    error={!!errors.uf}
+                    sx={{ width: { xs: "100%", sm: "50px", md: "130px" } }}
+                  >
                     <InputLabel>UF</InputLabel>
                     <Select {...field}>
                       {estadosBrasileiros.map((estado) => (
@@ -304,8 +328,8 @@ export const RegisterForm = () => {
               </Button>
             </Stack>
           </Stack>
-        </form>
       </Box>
     </Stack>
+    </form>
   );
 };
