@@ -2,20 +2,20 @@ import { useState, useEffect } from "react"
 import axios from "axios"
 import { getAuth, onAuthStateChanged } from "firebase/auth"
 
-export function useGetAppointments() {
-  const [appointments, setAppointments] = useState<any[]>([])
+export function useGetPatients() {
+  const [patients, setPatients] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<any>(null)
 
-  const fetchAppointments = async (token: string) => {
+  const fetchPatients = async (token: string) => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/appointments/list`,
+        `${import.meta.env.VITE_API_URL}/patient/list`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       )
-      setAppointments(response.data)
+      setPatients(response.data)
     } catch (err) {
       setError(err)
     } finally {
@@ -27,7 +27,7 @@ export function useGetAppointments() {
     const unsubscribe = onAuthStateChanged(getAuth(), async (user) => {
       if (user) {
         const token = await user.getIdToken()
-        fetchAppointments(token)
+        fetchPatients(token)
       } else {
         setLoading(false)
       }
@@ -36,7 +36,7 @@ export function useGetAppointments() {
     return () => unsubscribe()
   }, [])
 
-  return { appointments, loading, error, setAppointments, fetchAppointments }
+  return { patients, loading, error, setPatients, fetchPatients }
 }
 
-export default useGetAppointments
+export default useGetPatients

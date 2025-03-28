@@ -20,11 +20,12 @@ import {
   appointmentSchema,
   AppointmentFormData,
 } from "../../../../Schema/appointmentSchema"
-import useGetPatient from "../../../../../hook/useGetPatient"
+import useGetPatient from "../../../../../hook/useGetPatients"
 import { useCreateAppointments } from "../../../../../Register/hooks/useCreateAppointments"
 import { useTheme } from "@mui/material/styles"
 import { toast } from "react-toastify"
 import useGetAppointments from "../../../../../hook/useGetAppointments"
+import { getAuth } from "firebase/auth"
 
 
 
@@ -48,10 +49,12 @@ const SITUATION_MAP: Record<string, string> = {
 
 const AppointmentModal = ({ open, onClose }: AppointmentModalProps) => {
   const { patients, loading: loadingPatients } = useGetPatient()
-  const { appointments, loading: loadingAppointments } = useGetAppointments()
-  console.log('modal',appointments)
   const { createAppointments , loading, error } = useCreateAppointments()
+  const { appointments, setAppointments, fetchAppointments } = useGetAppointments()
+
   const theme = useTheme()
+
+  console.log('patients', patients)
 
   const {
     control,
@@ -92,10 +95,10 @@ const AppointmentModal = ({ open, onClose }: AppointmentModalProps) => {
 
   const onSubmit = async (data: AppointmentFormData) => {
     try {
-      await createAppointments({
+      const response = await createAppointments({
         patient_id: Number(data.patientId),
-        type: TYPE_MAP[data.type], 
-        status: SITUATION_MAP[data.situation], 
+        type: TYPE_MAP[data.type],
+        status: SITUATION_MAP[data.situation],
         place_of_service: data.placeOfService,
         service: data.service,
         start_time: data.startDate,
@@ -104,14 +107,22 @@ const AppointmentModal = ({ open, onClose }: AppointmentModalProps) => {
         description: data.description,
       })
   
-      onClose()
       toast.success("Agendamento criado com sucesso")
+      setAppointments([...appointments, response]) 
+      const auth = getAuth()
+      const currentUser = auth.currentUser
+      if (currentUser) {
+        const token = await currentUser.getIdToken()
+        await fetchAppointments(token) 
+      }
+  
+      onClose()
       reset()
     } catch (error) {
-      toast.error("Erro inesperado. Tente novamente")
-      console.error(error)
+      toast.error("Erro ao criar agendamento")
     }
   }
+  
 
   return (
     <Modal open={open} onClose={onClose}>
