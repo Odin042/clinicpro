@@ -24,7 +24,7 @@ import AppointmentModal from "./components/AppointmentsModal";
 import useGetAppointments from "../../../hook/useGetAppointments";
 
 import { format } from "date-fns";
-import useGetPatient from "../../../hook/useGetPatient";
+import useGetPatient from "../../../hook/useGetPatients";
 
 const Home = () => {
   const [isPatientResgistrationModalOpen, setPatientResgistrationModalOpen] =
@@ -33,6 +33,10 @@ const Home = () => {
   const { firebaseUser, backendUser, loading } = useContext(AuthContext);
   const { appointments, loading: loadingAppointments } = useGetAppointments();
   const { patients, loading: loadingPatients } = useGetPatient();
+
+  console.log("patients", patients);
+
+  console.log('appointments', appointments)
 
   const getPatientNameById = (id: number) => {
     const foundPatient = patients.find((p) => p.id === id);

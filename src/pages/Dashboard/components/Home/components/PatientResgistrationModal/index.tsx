@@ -20,6 +20,9 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { patientSchema } from "../../../../Schema/patientSchema"
 import { z } from "zod"
 import { useCreatePatient } from "../../../../../Register/hooks/useCreatePatient"
+import { useGetPatients } from "../../../../../hook/useGetPatients"
+import { getAuth } from "firebase/auth"
+
 
 type PatientFormData = z.infer<typeof patientSchema>
 
@@ -30,6 +33,7 @@ interface PatientFormModalProps {
 
 const PatientRegistrationModal = ({ open, onClose }: PatientFormModalProps) => {
   const { createPatient, loading, error } = useCreatePatient()
+  const { patients, setPatients, fetchPatients } = useGetPatients()
   const {
     control,
     handleSubmit,
@@ -59,8 +63,18 @@ const PatientRegistrationModal = ({ open, onClose }: PatientFormModalProps) => {
 
   const onSubmit = async (data: PatientFormData) => {
     try {
-      await createPatient(data)
+      const response = await createPatient(data)
       toast.success("Paciente criado com sucesso")
+      setPatients([...patients, response]) 
+  
+
+      const auth = getAuth()
+      const currentUser = auth.currentUser
+      if (currentUser) {
+        const token = await currentUser.getIdToken()
+        await fetchPatients(token)
+      }
+  
       onClose()
       reset()
     } catch (err) {

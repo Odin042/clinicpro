@@ -1,7 +1,6 @@
-import React, { createContext, useEffect, useState } from "react"
+import React, { createContext, useEffect, useState, useCallback } from "react"
 import { getAuth, onAuthStateChanged, User } from "firebase/auth"
 import axios from "axios"
-
 
 type BackendUserData = {
   id: string
@@ -22,20 +21,42 @@ type AuthContextProps = {
   firebaseUser: User | null
   backendUser: BackendUserData | null
   loading: boolean
+  refreshUser: () => Promise<void> 
 }
 
 export const AuthContext = createContext<AuthContextProps>({
   firebaseUser: null,
   backendUser: null,
   loading: true,
+  refreshUser: async () => {},
 })
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [firebaseUser, setFirebaseUser] = useState<User | null>(null)
   const [backendUser, setBackendUser] = useState<BackendUserData | null>(null)
   const [loading, setLoading] = useState(true)
+
+  const fetchBackendUser = useCallback(async (user: User) => {
+    try {
+      const token = await user.getIdToken(true)
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/user`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      setBackendUser(response.data)
+    } catch (err) {
+      console.error("Erro ao buscar dados do usuário no back-end:", err)
+      setBackendUser(null)
+    }
+  }, [])
+
+  const refreshUser = useCallback(async () => {
+    const auth = getAuth()
+    const user = auth.currentUser
+    if (user) {
+      await user.getIdToken(true)
+      await fetchBackendUser(user)
+    }
+  }, [fetchBackendUser])
 
   useEffect(() => {
     const auth = getAuth()
@@ -50,38 +71,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         return
       }
 
-
       setFirebaseUser(user)
-
-      try {
-
-        const token = await user.getIdToken(true)
-        const response = await axios.get(
-          (`${import.meta.env.VITE_API_URL}/user`),
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        )
-        
-        setBackendUser(response.data)
-      } catch (err) {
-        console.error("Erro ao buscar dados do usuário no back-end:", err)
-        setBackendUser(null)
-      } finally {
-        setLoading(false)
-      }
+      await fetchBackendUser(user)
+      setLoading(false)
     })
 
     return () => unsubscribe()
-  }, [])
-
-  console.log("API URL:", import.meta.env.VITE_API_URL)
-  console.log('Database URL:', process.env.DATABASE_URL)
+  }, [fetchBackendUser])
 
   return (
-    <AuthContext.Provider value={{ firebaseUser, backendUser, loading }}>
+    <AuthContext.Provider value={{ firebaseUser, backendUser, loading, refreshUser }}>
       {children}
     </AuthContext.Provider>
   )

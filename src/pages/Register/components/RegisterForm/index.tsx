@@ -19,9 +19,12 @@ import Logo from "../../../../assets/clinic360prologo.png";
 import { registerFormSchema } from "../../../schemas/RegisterSchema";
 import { estadosBrasileiros } from "../../../../mocks/states";
 import { formatCpfCnpj, formatPhone } from "../../../../utils/formats";
+import { AuthContext } from "../../../../AuthContext"
+import { useContext } from "react";
 
 export const RegisterForm = () => {
   const { createUser, loading } = useCreateUser();
+  const { refreshUser } = useContext(AuthContext)
   const navigate = useNavigate();
 
   const {
@@ -69,7 +72,7 @@ export const RegisterForm = () => {
         phone,
         uf,
       });
-
+      await refreshUser()
       toast.success("Usuário criado com sucesso");
       reset();
       navigate("/dashboard");

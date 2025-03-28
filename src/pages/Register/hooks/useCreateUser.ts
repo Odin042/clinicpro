@@ -23,13 +23,15 @@ export const useCreateUser = (): UseCreateUserReturn => {
   ) => {
     setLoading(true)
     setError(null)
-  
-    let user: User | null = null
-  
+
+    let user: any = null
+
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password)
       user = userCredential.user
-  
+
+      // 🔥 Força renovação do token após criação
+      await user.getIdToken(true)
 
       const response = await fetch(`${import.meta.env.VITE_API_URL}/register`, {
         method: "POST",
@@ -42,21 +44,22 @@ export const useCreateUser = (): UseCreateUserReturn => {
           ...additionalData,
         }),
       })
-  
+
       if (!response.ok) {
         throw new Error(`Erro na API: ${response.status}`)
       }
-  
+
       const result = await response.json()
-      return result
-  
+
+      return result.user
+
     } catch (error: any) {
       if (user) {
-        await user.delete()
+        await user.delete() 
       }
       setError(error.message || "Ocorreu um erro")
       throw error
-  
+
     } finally {
       setLoading(false)
     }
