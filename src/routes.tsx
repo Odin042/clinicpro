@@ -6,6 +6,7 @@ import { Login } from './pages/Login/LoginForm'
 import Dashboard from './pages/Dashboard'
 import ForgotPassword from './pages/components/ForgotPassword'
 import ResetPassword from './pages/ExternalResetPassword'
+import CalendarAppointments from './pages/Dashboard/components/Scheduling'
 
 
 
@@ -19,6 +20,7 @@ const AppRoutes: React.FC = () => {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/calendar" element={<CalendarAppointments />} />
       </Routes>
     </Router>
   );

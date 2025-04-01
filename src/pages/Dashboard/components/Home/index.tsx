@@ -17,14 +17,39 @@ import EmailIcon from "@mui/icons-material/Email";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import PatientRegistrationModal from "./components/PatientResgistrationModal";
-import { useGetUsers } from "../../../hook/useGetUsers";
 import { AuthContext } from "../../../../AuthContext";
-import { ControlPointSharp } from "@mui/icons-material";
 import AppointmentModal from "./components/AppointmentsModal";
 import useGetAppointments from "../../../hook/useGetAppointments";
-
 import { format } from "date-fns";
 import useGetPatient from "../../../hook/useGetPatients";
+import CalendarAppointments from "../Scheduling";
+import { useNavigate } from "react-router-dom";
+
+const TYPE_MAP_PT: Record<string, string> = {
+  CONSULTATION: "Consulta",
+  RETURN: "Retorno",
+  EXPECTED_RETURN: "Retorno Programado",
+  OTHER: "Outros",
+};
+
+const TYPE_COLORS: Record<string, string> = {
+  CONSULTATION: "#4CAF50",
+  RETURN: "#2196F3",
+  EXPECTED_RETURN: "#FFC107",
+  OTHER: "#9E9E9E",
+};
+
+const STATUS_COLORS: Record<string, string> = {
+  PENDING: "#FFC107",
+  CONFIRMED: "#4CAF50",
+  CANCELED: "#F44336",
+};
+
+const STATUS_MAP_PT: Record<string, string> = {
+  PENDING: "Pendente",
+  CONFIRMED: "Confirmado",
+  CANCELED: "Cancelado",
+};
 
 const Home = () => {
   const [isPatientResgistrationModalOpen, setPatientResgistrationModalOpen] =
@@ -33,10 +58,7 @@ const Home = () => {
   const { firebaseUser, backendUser, loading } = useContext(AuthContext);
   const { appointments, loading: loadingAppointments } = useGetAppointments();
   const { patients, loading: loadingPatients } = useGetPatient();
-
-  console.log("patients", patients);
-
-  console.log('appointments', appointments)
+  const navigate = useNavigate();
 
   const getPatientNameById = (id: number) => {
     const foundPatient = patients.find((p) => p.id === id);
@@ -167,7 +189,9 @@ const Home = () => {
                 Agendamentos
               </Typography>
               <Stack direction="row" spacing={1}>
-                <Button variant="text">Ver toda agenda</Button>
+                <Button variant="text" onClick={() => navigate("/calendar")}>
+                  Ver toda agenda
+                </Button>
                 <Button
                   variant="contained"
                   color="primary"
@@ -196,10 +220,7 @@ const Home = () => {
                     new Date(appointment.start_time),
                     "dd/MM/yyyy HH:mm"
                   );
-                  const end = format(
-                    new Date(appointment.end_time),
-                    "dd/MM/yyyy HH:mm"
-                  );
+
                   return (
                     <Box
                       key={appointment.id}
@@ -213,7 +234,7 @@ const Home = () => {
                         boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
                       }}
                     >
-                      <Stack direction="row" alignItems="center" spacing={1}>
+                      <Stack direction="row" alignItems="center" spacing={4}>
                         <Avatar>
                           {patientName
                             .split(" ")
@@ -228,28 +249,30 @@ const Home = () => {
                             {patientName}
                           </Typography>
                           <Typography variant="body2" color="textSecondary">
-                            {start} - {end}
+                            {start}
                           </Typography>
-                          <Typography variant="body2" color="textSecondary">
-                            <Chip
-                              label={appointment.service}
-                              variant="outlined"
-                              sx={{
-                                borderColor:
-                                  appointment.service === "CONSULTATION"
-                                    ? "#4CAF50" 
-                                    : appointment.service === "RETURN"
-                                    ? "#FF9800" 
-                                    : "#2196F3", 
-                                color:
-                                  appointment.service === "CONSULTATION"
-                                    ? "#4CAF50"
-                                    : appointment.service === "RETURN"
-                                    ? "#FF9800"
-                                    : "#2196F3",
-                              }}
-                            />
-                          </Typography>
+                        </Stack>
+                        <Stack direction="row" spacing={1}>
+                          <Chip
+                            label={TYPE_MAP_PT[appointment.type] || "Outros"}
+                            sx={{
+                              backgroundColor:
+                                TYPE_COLORS[appointment.type] || "#9E9E9E",
+                              color: "#fff",
+                            }}
+                          />
+
+                          <Chip
+                            label={
+                              STATUS_MAP_PT[appointment.status] ||
+                              appointment.status
+                            }
+                            sx={{
+                              backgroundColor:
+                                STATUS_COLORS[appointment.status],
+                              color: "#fff",
+                            }}
+                          />
                         </Stack>
                       </Stack>
                       <Stack direction="row" spacing={1}>

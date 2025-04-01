@@ -54,7 +54,7 @@ const AppointmentModal = ({ open, onClose }: AppointmentModalProps) => {
 
   const theme = useTheme()
 
-  console.log('patients', patients)
+
 
   const {
     control,
