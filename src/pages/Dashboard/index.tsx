@@ -1,16 +1,19 @@
-import React, { useState } from "react";
-import { Stack } from "@mui/material";
-import SideBar from "./components/SideBar";
-import Home from "./components/Home";
+import React, { useState } from "react"
+import { Stack } from "@mui/material"
+import SideBar from "./components/SideBar"
+import Home from "./components/Home"
+import CalendarAppointments from "./components/Scheduling"
 
 export const Dashboard = () => {
-  const [activeComponent, setActiveComponent] = useState("home");
-  const [isDrawerOpen, setIsDrawerOpen] = useState(true);
+  const [activeComponent, setActiveComponent] = useState("home")
+  const [isDrawerOpen, setIsDrawerOpen] = useState(true)
 
   const renderComponent = () => {
     switch (activeComponent) {
       case "home":
-        return <Home />;
+        return <Home />
+      case "scheduling":
+        return  <CalendarAppointments />
       default:
         return null
     }
@@ -35,7 +38,7 @@ export const Dashboard = () => {
         {renderComponent()}
       </Stack>
     </Stack>
-  );
-};
+  )
+}
 
-export default Dashboard;
+export default Dashboard
