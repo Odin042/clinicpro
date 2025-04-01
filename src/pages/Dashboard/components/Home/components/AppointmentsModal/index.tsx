@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect } from "react"
 import {
   Modal,
   Box,
@@ -32,6 +32,7 @@ import { getAuth } from "firebase/auth"
 interface AppointmentModalProps {
   open: boolean
   onClose: () => void
+  selectedDate?: Date | null
 }
 
 const TYPE_MAP: Record<string, string> = {
@@ -47,7 +48,7 @@ const SITUATION_MAP: Record<string, string> = {
   pendente: "PENDING",
 }
 
-const AppointmentModal = ({ open, onClose }: AppointmentModalProps) => {
+const AppointmentModal = ({ open, onClose, selectedDate }: AppointmentModalProps) => {
   const { patients, loading: loadingPatients } = useGetPatient()
   const { createAppointments , loading, error } = useCreateAppointments()
   const { appointments, setAppointments, fetchAppointments } = useGetAppointments()
@@ -60,6 +61,7 @@ const AppointmentModal = ({ open, onClose }: AppointmentModalProps) => {
     control,
     handleSubmit,
     register,
+    setValue,
     formState: { errors },
     reset,
   } = useForm<AppointmentFormData>({
@@ -76,6 +78,18 @@ const AppointmentModal = ({ open, onClose }: AppointmentModalProps) => {
       description: "",
     },
   })
+
+  useEffect(() => {
+    if (selectedDate) {
+      const startIso = selectedDate.toISOString().slice(0, 16)
+  
+      const end = new Date(selectedDate.getTime() + 60 * 60 * 1000)
+      const endIso = end.toISOString().slice(0, 16)
+  
+      setValue("startDate", startIso)
+      setValue("endDate", endIso)
+    }
+  }, [selectedDate, setValue])
 
   const selectedBtnStyles = {
     backgroundColor: "primary.main",
