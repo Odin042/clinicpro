@@ -1,49 +1,69 @@
 import React, { useEffect, useState } from "react"
-import FullCalendar from "@fullcalendar/react"
-import dayGridPlugin from "@fullcalendar/daygrid"
-import timeGridPlugin from "@fullcalendar/timegrid"
-import interactionPlugin from "@fullcalendar/interaction"
-import ptBrLocale from "@fullcalendar/core/locales/pt-br"
+import { Box, Skeleton, Stack } from "@mui/material"
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
+import dayjs, { Dayjs } from "dayjs"
 import useGetAppointments from "../../../hook/useGetAppointments"
 import useGetPatient from "../../../hook/useGetPatients"
-import { Skeleton, Box } from "@mui/material"
+import SideMenu from "./components/SideMenu"
+import CalendarView from "./components/CalendarView"
+import AppointmentModal from "../Home/components/AppointmentsModal"
+
+function getStatusColor(s: string) {
+  const map: Record<string, string> = {
+    PENDING: "#FFC107",
+    CONFIRMED: "#4CAF50",
+    CANCELED: "#F44336",
+  }
+  return map[s] || "#f90000"
+}
+
+interface StatusFilters {
+  PENDING: boolean
+  CONFIRMED: boolean
+  CANCELED: boolean
+}
 
 export default function CalendarAppointments() {
   const { appointments, loading: loadingAppointments } = useGetAppointments()
   const { patients, loading: loadingPatients } = useGetPatient()
-  const [events, setEvents] = useState([])
 
-  const getStatusColor = (status) => {
-    const colors = {
-      PENDING: "#FFC107",
-      CONFIRMED: "#4CAF50",
-      CANCELED: "#F44336",
-    }
-    return colors[status] || "#f90000"
-  }
+  const [miniDate, setMiniDate] = useState<Dayjs>(dayjs())
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+
+  const [statusFilters, setStatusFilters] = useState<StatusFilters>({
+    PENDING: true,
+    CONFIRMED: true,
+    CANCELED: true,
+  })
+
+  const [events, setEvents] = useState<any[]>([])
 
   useEffect(() => {
-    if (appointments.length > 0 && patients.length > 0) {
-      const mapped = appointments.map((appointment) => {
-        const patient = patients.find((p) => p.id === appointment.patient_id)
-        return {
-          id: appointment.id,
-          title: patient ? patient.name : "Paciente não encontrado",
-          start: appointment.start_time,
-          end: appointment.end_time,
-          backgroundColor: getStatusColor(appointment.status),
-          borderColor: "#000",
-          textColor: "#fff",
-          display: "block",
-          extendedProps: {
-            ...appointment,
-            patientName: patient ? patient.name : null,
-          },
-        }
-      })
-      setEvents(mapped)
+    if (appointments.length && patients.length) {
+      const filtered = appointments
+        .filter((ap) => statusFilters[ap.status])
+        .map((ap) => {
+          const patient = patients.find((p) => p.id === ap.patient_id)
+          return {
+            id: ap.id,
+            title: patient ? patient.name : "Paciente não encontrado",
+            start: ap.start_time,
+            end: ap.end_time,
+            backgroundColor: getStatusColor(ap.status),
+            textColor: "#fff",
+            display: "block",
+            extendedProps: {
+              place_of_service: ap.place_of_service,
+              service: ap.service,
+              status: ap.status,
+            },
+          }
+        })
+      setEvents(filtered)
     }
-  }, [appointments, patients])
+  }, [appointments, patients, statusFilters])
 
   if (loadingAppointments || loadingPatients) {
     return (
@@ -53,42 +73,45 @@ export default function CalendarAppointments() {
     )
   }
 
+  function handleStatusChange(key: keyof StatusFilters) {
+    setStatusFilters((prev) => ({ ...prev, [key]: !prev[key] }))
+  }
+
+  function handleDateChange(newDate: Dayjs) {
+    setMiniDate(newDate)
+  }
+
+  function handleCreateAppointment() {
+    setIsModalOpen(true)
+  }
+
+  function handleCalendarDateClick(date: Date) {
+    setSelectedDate(date)
+    setIsModalOpen(true)
+  }
+
   return (
-    <div className="p-4">
-      <FullCalendar
-        locales={[ptBrLocale]}
-        locale="pt-br"
-        slotLabelFormat={{
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false,
-        }}
-        titleFormat={{ month: "long", year: "numeric" }}
-        dayHeaderFormat={{ weekday: "long" }}
-        dayHeaderClassNames={() => "capitalize"}
-        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-        initialView="dayGridMonth"
-        headerToolbar={{
-          left: "prev,next today",
-          center: "title",
-          right: "dayGridMonth,timeGridWeek,timeGridDay",
-        }}
-        events={events}
-        eventContent={(arg) => (
-          <div
-            style={{
-              backgroundColor: arg.event.backgroundColor,
-              color: "#fff",
-              padding: "2px 4px",
-              borderRadius: "4px",
-              fontSize: "0.75rem",
-            }}
-          >
-            {arg.timeText} {arg.event.title}
-          </div>
-        )}
-        height="auto"
+    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
+      <Stack direction="row" sx={{ width: "100%", height: "100%" }}>
+        <SideMenu
+          statusFilters={statusFilters}
+          onStatusChange={handleStatusChange}
+          selectedDate={miniDate}
+          onDateChange={handleDateChange}
+          onCreateAppointment={handleCreateAppointment}
+        />
+        <CalendarView
+          events={events}
+          onDateClick={handleCalendarDateClick}
+          selectedDate={miniDate}
+        />
+      </Stack>
+
+      <AppointmentModal
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        selectedDate={selectedDate}
       />
-    </div>
+    </LocalizationProvider>
   )
 }
