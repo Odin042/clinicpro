@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useEffect } from "react";
 import {
   Modal,
   Box,
@@ -13,26 +13,26 @@ import {
   ToggleButtonGroup,
   ToggleButton,
   ButtonGroup,
-} from "@mui/material"
-import { useForm, Controller } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
+  Checkbox,
+  FormControlLabel,
+} from "@mui/material";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   appointmentSchema,
   AppointmentFormData,
-} from "../../../../Schema/appointmentSchema"
-import useGetPatient from "../../../../../hook/useGetPatients"
-import { useCreateAppointments } from "../../../../../Register/hooks/useCreateAppointments"
-import { useTheme } from "@mui/material/styles"
-import { toast } from "react-toastify"
-import useGetAppointments from "../../../../../hook/useGetAppointments"
-import { getAuth } from "firebase/auth"
-
-
+} from "../../../../Schema/appointmentSchema";
+import useGetPatient from "../../../../../hook/useGetPatients";
+import { useCreateAppointments } from "../../../../../Register/hooks/useCreateAppointments";
+import { useTheme } from "@mui/material/styles";
+import { toast } from "react-toastify";
+import useGetAppointments from "../../../../../hook/useGetAppointments";
+import { getAuth } from "firebase/auth";
 
 interface AppointmentModalProps {
-  open: boolean
-  onClose: () => void
-  selectedDate?: Date | null
+  open: boolean;
+  onClose: () => void;
+  selectedDate?: Date | null;
 }
 
 const TYPE_MAP: Record<string, string> = {
@@ -40,22 +40,25 @@ const TYPE_MAP: Record<string, string> = {
   retorno: "RETURN",
   previsao_retorno: "EXPECTED_RETURN",
   outros: "OTHER",
-}
+};
 
 const SITUATION_MAP: Record<string, string> = {
   confirmada: "CONFIRMED",
   desmarcada: "CANCELED",
   pendente: "PENDING",
-}
+};
 
-const AppointmentModal = ({ open, onClose, selectedDate }: AppointmentModalProps) => {
-  const { patients, loading: loadingPatients } = useGetPatient()
-  const { createAppointments , loading, error } = useCreateAppointments()
-  const { appointments, setAppointments, fetchAppointments } = useGetAppointments()
+const AppointmentModal = ({
+  open,
+  onClose,
+  selectedDate,
+}: AppointmentModalProps) => {
+  const { patients, loading: loadingPatients } = useGetPatient();
+  const { createAppointments, loading, error } = useCreateAppointments();
+  const { appointments, setAppointments, fetchAppointments } =
+    useGetAppointments();
 
-  const theme = useTheme()
-
-
+  const theme = useTheme();
 
   const {
     control,
@@ -72,24 +75,25 @@ const AppointmentModal = ({ open, onClose, selectedDate }: AppointmentModalProps
       patientId: 0,
       placeOfService: "",
       service: "",
+      online_service: false,
       startDate: "",
       endDate: "",
       timeZone: "UTC-03",
       description: "",
     },
-  })
+  });
 
   useEffect(() => {
     if (selectedDate) {
-      const startIso = selectedDate.toISOString().slice(0, 16)
-  
-      const end = new Date(selectedDate.getTime() + 60 * 60 * 1000)
-      const endIso = end.toISOString().slice(0, 16)
-  
-      setValue("startDate", startIso)
-      setValue("endDate", endIso)
+      const startIso = selectedDate.toISOString().slice(0, 16);
+
+      const end = new Date(selectedDate.getTime() + 60 * 60 * 1000);
+      const endIso = end.toISOString().slice(0, 16);
+
+      setValue("startDate", startIso);
+      setValue("endDate", endIso);
     }
-  }, [selectedDate, setValue])
+  }, [selectedDate, setValue]);
 
   const selectedBtnStyles = {
     backgroundColor: "primary.main",
@@ -97,7 +101,7 @@ const AppointmentModal = ({ open, onClose, selectedDate }: AppointmentModalProps
     "&:hover": {
       backgroundColor: "primary.dark",
     },
-  }
+  };
 
   const unselectedBtnStyles = {
     backgroundColor: "grey.100",
@@ -105,7 +109,7 @@ const AppointmentModal = ({ open, onClose, selectedDate }: AppointmentModalProps
     "&:hover": {
       backgroundColor: "grey.200",
     },
-  }
+  };
 
   const onSubmit = async (data: AppointmentFormData) => {
     try {
@@ -115,28 +119,28 @@ const AppointmentModal = ({ open, onClose, selectedDate }: AppointmentModalProps
         status: SITUATION_MAP[data.situation],
         place_of_service: data.placeOfService,
         service: data.service,
+        online_service: data.online_service,
         start_time: data.startDate,
         end_time: data.endDate,
         timezone: data.timeZone,
         description: data.description,
-      })
-  
-      toast.success("Agendamento criado com sucesso")
-      setAppointments([...appointments, response]) 
-      const auth = getAuth()
-      const currentUser = auth.currentUser
+      });
+
+      toast.success("Agendamento criado com sucesso");
+      setAppointments([...appointments, response]);
+      const auth = getAuth();
+      const currentUser = auth.currentUser;
       if (currentUser) {
-        const token = await currentUser.getIdToken()
-        await fetchAppointments(token) 
+        const token = await currentUser.getIdToken();
+        await fetchAppointments(token);
       }
-  
-      onClose()
-      reset()
+
+      onClose();
+      reset();
     } catch (error) {
-      toast.error("Erro ao criar agendamento")
+      toast.error("Erro ao criar agendamento");
     }
-  }
-  
+  };
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -159,7 +163,7 @@ const AppointmentModal = ({ open, onClose, selectedDate }: AppointmentModalProps
           Agendamento
         </Typography>
         <form onSubmit={handleSubmit(onSubmit)}>
-        <Typography sx={{ mb: 1, fontWeight: 600 }}>Tipo</Typography>
+          <Typography sx={{ mb: 1, fontWeight: 600 }}>Tipo</Typography>
           <Controller
             name="type"
             control={control}
@@ -272,13 +276,33 @@ const AppointmentModal = ({ open, onClose, selectedDate }: AppointmentModalProps
             />
           </FormControl>
 
-          <TextField
-            fullWidth
-            label="Local de atendimento"
-            sx={{ mt: 2 }}
-            {...register("placeOfService")}
-            error={!!errors.placeOfService}
-          />
+          <Stack sx={{ mt: 2, flexDirection: "row" }} spacing={1}>
+            <TextField
+              label="Local de atendimento"
+              sx={{ mt: 2, width: "70%" }}
+              {...register("placeOfService")}
+              error={!!errors.placeOfService}
+              defaultChecked={false}
+            />
+
+            <Controller
+              name="online_service"
+              control={control}
+              render={({ field }) => (
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={field.value}
+                      onChange={(e) => field.onChange(e.target.checked)}
+                      color="primary"
+                    />
+                  }
+                  sx={{ mt: 2 }}
+                  label="Atendimento online"
+                />
+              )}
+            />
+          </Stack>
 
           <TextField
             fullWidth
@@ -341,7 +365,7 @@ const AppointmentModal = ({ open, onClose, selectedDate }: AppointmentModalProps
         </form>
       </Box>
     </Modal>
-  )
-}
+  );
+};
 
-export default AppointmentModal
+export default AppointmentModal;

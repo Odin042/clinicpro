@@ -28,6 +28,8 @@ export default function CalendarAppointments() {
   const { appointments, loading: loadingAppointments } = useGetAppointments()
   const { patients, loading: loadingPatients } = useGetPatient()
 
+  console.log(appointments, patients)
+
   const [miniDate, setMiniDate] = useState<Dayjs>(dayjs())
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
@@ -58,6 +60,7 @@ export default function CalendarAppointments() {
               place_of_service: ap.place_of_service,
               service: ap.service,
               status: ap.status,
+              online_service: ap.online_service,
             },
           }
         })

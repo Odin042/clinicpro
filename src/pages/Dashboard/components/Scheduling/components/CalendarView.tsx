@@ -1,4 +1,3 @@
-// CalendarView.tsx
 import React, { useEffect, useRef } from "react"
 import FullCalendar from "@fullcalendar/react"
 import dayGridPlugin from "@fullcalendar/daygrid"
@@ -8,6 +7,7 @@ import ptBrLocale from "@fullcalendar/core/locales/pt-br"
 import { CalendarApi, EventApi, EventMouseEnterArg, EventMouseLeaveArg } from "@fullcalendar/core"
 import { Box, Popover, Typography } from "@mui/material"
 import { Dayjs } from "dayjs"
+import VideoCallIcon from '@mui/icons-material/VideoCall';;
 
 interface CalendarEvent {
   id: number | string
@@ -29,6 +29,8 @@ interface CalendarViewProps {
 export default function CalendarView({ events, onDateClick, selectedDate }: CalendarViewProps) {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null)
   const [hoveredEvent, setHoveredEvent] = React.useState<EventApi | null>(null)
+
+  console.log("events", events)
 
   const calendarRef = useRef<FullCalendar>(null)
 
@@ -84,19 +86,30 @@ export default function CalendarView({ events, onDateClick, selectedDate }: Cale
         titleFormat={{ month: "long", year: "numeric" }}
         dayHeaderFormat={{ weekday: "long" }}
         dayHeaderClassNames={() => "capitalize"}
-        eventContent={(arg) => (
-          <div
-            style={{
-              backgroundColor: arg.event.backgroundColor,
-              color: arg.event.textColor ?? "#fff",
-              padding: "2px 4px",
-              borderRadius: "4px",
-              fontSize: "0.75rem",
-            }}
-          >
-            {arg.timeText} {arg.event.title}
-          </div>
-        )}
+        eventContent={(arg) => {
+          const onlineService = arg.event.extendedProps?.online_service
+        
+          return (
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                backgroundColor: arg.event.backgroundColor,
+                color: arg.event.textColor ?? "#fff",
+                padding: "2px 4px",
+                borderRadius: "4px",
+                fontSize: "0.75rem",
+              }}
+            >
+              {onlineService && (  
+                <VideoCallIcon sx={{ fontSize: 20, mr: 0.5 }} />
+              )}
+              <span>
+                {arg.timeText} {arg.event.title}
+              </span>
+            </Box>
+          )
+        }}
         height="auto"
       />
 
