@@ -7,6 +7,7 @@ interface Appointments {
   status: string
   place_of_service: string
   service: string
+  online_service: boolean
   start_time: string
   end_time: string
   timezone: string
