@@ -20,9 +20,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { patientSchema } from "../../../../Schema/patientSchema"
 import { z } from "zod"
 import { useCreatePatient } from "../../../../../Register/hooks/useCreatePatient"
-import { useGetPatients } from "../../../../../hook/useGetPatients"
-import { getAuth } from "firebase/auth"
-
+         
 
 type PatientFormData = z.infer<typeof patientSchema>
 
@@ -32,53 +30,43 @@ interface PatientFormModalProps {
 }
 
 const PatientRegistrationModal = ({ open, onClose }: PatientFormModalProps) => {
-  const { createPatient, loading, error } = useCreatePatient()
-  const { patients, setPatients, fetchPatients } = useGetPatients()
+  const createPatient = useCreatePatient()                       
+
   const {
     control,
     handleSubmit,
     formState: { errors },
     watch,
     reset,
-    register,
+    register
   } = useForm<PatientFormData>({
     resolver: zodResolver(patientSchema),
     defaultValues: {
-      name: "",
-      birthday: "",
-      gender: "",
+      name: '',
+      birthday: '',
+      gender: '',
       isPregnant: false,
-      email: "",
-      whatsapp: "",
-      place_of_service: "",
-      occupation: "",
-      cpf_cnpj: "",
-      rg: "",
-      address: "",
-      health_plan: "",
-      weight: "",
-      height: "",
-    },
+      email: '',
+      whatsapp: '',
+      place_of_service: '',
+      occupation: '',
+      cpf_cnpj: '',
+      rg: '',
+      address: '',
+      health_plan: '',
+      weight: '',
+      height: ''
+    }
   })
 
   const onSubmit = async (data: PatientFormData) => {
     try {
-      const response = await createPatient(data)
-      toast.success("Paciente criado com sucesso")
-      setPatients([...patients, response]) 
-  
-
-      const auth = getAuth()
-      const currentUser = auth.currentUser
-      if (currentUser) {
-        const token = await currentUser.getIdToken()
-        await fetchPatients(token)
-      }
-  
+      await createPatient.mutateAsync(data)              
+      toast.success('paciente criado com sucesso')
       onClose()
       reset()
-    } catch (err) {
-      toast.error("Erro inesperado. Tente novamente")
+    } catch {
+      toast.error('erro inesperado, tente novamente')
     }
   }
 
@@ -100,7 +88,6 @@ const PatientRegistrationModal = ({ open, onClose }: PatientFormModalProps) => {
         <Typography variant="h6" gutterBottom>
           Adicionar Novo Paciente
         </Typography>
-        {error && <Typography color="error">{error}</Typography>}
         <form onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing={2}>
             <Stack direction="row" spacing={2}>
@@ -252,8 +239,8 @@ const PatientRegistrationModal = ({ open, onClose }: PatientFormModalProps) => {
             </Stack>
           </Stack>
           <Stack direction="row" spacing={2} sx={{ marginTop: 2 }}>
-            <Button type="submit" variant="contained" color="primary" disabled={loading}>
-              {loading ? "Salvando..." : "Salvar"}
+            <Button type="submit" variant="contained" color="primary" loading={createPatient.isPending} >
+              {"Salvar"}
             </Button>
             <Button variant="outlined" color="secondary" onClick={onClose}>
               Cancelar

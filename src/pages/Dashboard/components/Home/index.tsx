@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import {
   Stack,
   Box,
@@ -19,10 +19,9 @@ import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import PatientRegistrationModal from "./components/PatientResgistrationModal";
 import { AuthContext } from "../../../../AuthContext";
 import AppointmentModal from "./components/AppointmentsModal";
-import useGetAppointments from "../../../hook/useGetAppointments";
-import { format } from "date-fns";
+import { useGetAppointments } from "../../../hook/useGetAppointments";
+import { format, startOfDay, endOfDay } from "date-fns";
 import useGetPatient from "../../../hook/useGetPatients";
-import CalendarAppointments from "../Scheduling";
 import { useNavigate } from "react-router-dom";
 
 const TYPE_MAP_PT: Record<string, string> = {
@@ -54,10 +53,12 @@ const STATUS_MAP_PT: Record<string, string> = {
 const Home = () => {
   const [isPatientResgistrationModalOpen, setPatientResgistrationModalOpen] =
     useState(false);
-  const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
   const { firebaseUser, backendUser, loading } = useContext(AuthContext);
-  const { appointments, loading: loadingAppointments } = useGetAppointments();
-  const { patients, loading: loadingPatients } = useGetPatient();
+  const { data: appointments = [] } = useGetAppointments();
+  const { data: patients = [] } = useGetPatient();
+  const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
+  const [editingAppointment, setEditingAppointment] =
+    useState<Appointment | null>(null);
   const navigate = useNavigate();
 
   const getPatientNameById = (id: number) => {
@@ -68,8 +69,24 @@ const Home = () => {
   const handleOpenModal = () => setPatientResgistrationModalOpen(true);
   const handleCloseModal = () => setPatientResgistrationModalOpen(false);
 
-  const handleOpenAppointmentModal = () => setIsAppointmentModalOpen(true);
-  const handleCloseAppointmentModal = () => setIsAppointmentModalOpen(false);
+  const handleOpenAppointmentModal = () => {
+    setEditingAppointment(null);
+    setIsAppointmentModalOpen(true);
+  };
+  const handleCloseAppointmentModal = () => {
+    setIsAppointmentModalOpen(false);
+    setEditingAppointment(null);
+  };
+
+  const todayAppointments = useMemo(() => {
+    const start = startOfDay(new Date());
+    const end = endOfDay(new Date());
+
+    return appointments.filter((appt) => {
+      const when = new Date(appt.start_time);
+      return when >= start && when <= end;
+    });
+  }, [appointments]);
 
   return (
     <Stack spacing={2} direction="row" sx={{ height: "100%", width: "100%" }}>
@@ -205,14 +222,15 @@ const Home = () => {
             <AppointmentModal
               open={isAppointmentModalOpen}
               onClose={handleCloseAppointmentModal}
+              appointment={editingAppointment ?? undefined}
             />
-            {appointments.length === 0 ? (
+            {todayAppointments.length === 0 ? (
               <Typography variant="body2" color="textSecondary">
                 Nenhum agendamento para hoje.
               </Typography>
             ) : (
               <Stack spacing={1}>
-                {appointments.map((appointment) => {
+                {todayAppointments.map((appointment) => {
                   const patientName = getPatientNameById(
                     appointment.patient_id
                   );
@@ -224,6 +242,10 @@ const Home = () => {
                   return (
                     <Box
                       key={appointment.id}
+                      onClick={() => {
+                        setEditingAppointment(appointment);
+                        setIsAppointmentModalOpen(true);
+                      }}
                       sx={{
                         display: "flex",
                         alignItems: "center",
@@ -232,6 +254,9 @@ const Home = () => {
                         bgcolor: "#f9f9f9",
                         borderRadius: 2,
                         boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
+                        "&:hover": {
+                          backgroundColor: "#e0f7fa",
+                        },
                       }}
                     >
                       <Stack direction="row" alignItems="center" spacing={4}>
