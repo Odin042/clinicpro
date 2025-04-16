@@ -1,42 +1,13 @@
-import { useState, useEffect } from "react"
-import axios from "axios"
-import { getAuth, onAuthStateChanged } from "firebase/auth"
+import { useQuery } from '@tanstack/react-query'
+import { listAppointments } from '../../services/appointments/appointments'
 
 export function useGetAppointments() {
-  const [appointments, setAppointments] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<any>(null)
-
-  const fetchAppointments = async (token: string) => {
-    try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/appointments/list`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      )
-      setAppointments(response.data)
-    } catch (err) {
-      setError(err)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(getAuth(), async (user) => {
-      if (user) {
-        const token = await user.getIdToken()
-        fetchAppointments(token)
-      } else {
-        setLoading(false)
-      }
-    })
-
-    return () => unsubscribe()
-  }, [])
-
-  return { appointments, loading, error, setAppointments, fetchAppointments }
+  return useQuery({
+    queryKey: ['appointments'],
+    queryFn: listAppointments,
+    staleTime: 1000 * 60,          // 1 min
+    refetchOnWindowFocus: false
+  })
 }
 
 export default useGetAppointments

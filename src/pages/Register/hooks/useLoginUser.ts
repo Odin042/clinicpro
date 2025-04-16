@@ -1,36 +1,19 @@
-import { useContext, useState } from "react"
-import { signInWithEmailAndPassword } from "firebase/auth"
-import { auth } from "../../../config/firebasedatabase"
-import { AuthContext } from "../../../AuthContext"
+import { useMutation } from '@tanstack/react-query'
+import { signIn } from '../../../services/login/login'
+import { useContext } from 'react'
+import { AuthContext } from '../../../AuthContext'
 
-const useLogin = () => {
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+export function useLogin() {
   const { refreshUser } = useContext(AuthContext)
 
-  const login = async (email: string, password: string) => {
-    setLoading(true)
-    setError(null)
+  return useMutation({
+    mutationFn: ({ email, password }: { email: string; password: string }) =>
+      signIn(email, password),
 
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password)
-      const user = userCredential.user
-
-
+    onSuccess: async () => {
       await refreshUser()
-
-      return user 
-
-    } catch (err: any) {
-      console.error("Erro ao logar:", err.message)
-      setError(err.message || "Erro ao realizar o login")
-      throw err
-    } finally {
-      setLoading(false)
     }
-  }
-
-  return { login, loading, error }
+  })
 }
 
 export default useLogin

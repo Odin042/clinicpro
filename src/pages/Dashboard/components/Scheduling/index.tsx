@@ -25,10 +25,10 @@ interface StatusFilters {
 }
 
 export default function CalendarAppointments() {
-  const { appointments, loading: loadingAppointments } = useGetAppointments()
-  const { patients, loading: loadingPatients } = useGetPatient()
+  const { data: appointments = [] } = useGetAppointments()
+  const { data: patients } = useGetPatient()
 
-  console.log(appointments, patients)
+ 
 
   const [miniDate, setMiniDate] = useState<Dayjs>(dayjs())
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -67,14 +67,6 @@ export default function CalendarAppointments() {
       setEvents(filtered)
     }
   }, [appointments, patients, statusFilters])
-
-  if (loadingAppointments || loadingPatients) {
-    return (
-      <Box p={4}>
-        <Skeleton variant="rectangular" width="100%" height={400} />
-      </Box>
-    )
-  }
 
   function handleStatusChange(key: keyof StatusFilters) {
     setStatusFilters((prev) => ({ ...prev, [key]: !prev[key] }))

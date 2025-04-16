@@ -1,371 +1,240 @@
-import React, { useEffect } from "react";
 import {
   Modal,
   Box,
   Typography,
   TextField,
-  Button,
   Stack,
+  Button,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
-  ToggleButtonGroup,
-  ToggleButton,
   ButtonGroup,
   Checkbox,
-  FormControlLabel,
-} from "@mui/material";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  appointmentSchema,
-  AppointmentFormData,
-} from "../../../../Schema/appointmentSchema";
-import useGetPatient from "../../../../../hook/useGetPatients";
-import { useCreateAppointments } from "../../../../../Register/hooks/useCreateAppointments";
-import { useTheme } from "@mui/material/styles";
-import { toast } from "react-toastify";
-import useGetAppointments from "../../../../../hook/useGetAppointments";
-import { getAuth } from "firebase/auth";
+  FormControlLabel
+} from '@mui/material'
+import { LoadingButton } from '@mui/lab'
+import { useForm, Controller } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { appointmentSchema, AppointmentFormData } from '../../../../Schema/appointmentSchema'
+import { usePatients } from '../../../../../hook/useGetPatients'
+import { useCreateAppointments } from '../../../../../Register/hooks/useCreateAppointments'
+import { useUpdateAppointments } from '../../../../../hook/useUpdateAppointments'
+import { useEffect } from 'react'
+import { toast } from 'react-toastify'
 
 interface AppointmentModalProps {
-  open: boolean;
-  onClose: () => void;
-  selectedDate?: Date | null;
+  open: boolean
+  onClose: () => void
+  selectedDate?: Date | null
+  appointment?: Appointment
 }
 
-const TYPE_MAP: Record<string, string> = {
-  consulta: "CONSULTATION",
-  retorno: "RETURN",
-  previsao_retorno: "EXPECTED_RETURN",
-  outros: "OTHER",
-};
+const TYPE_MAP = {
+  consulta: 'CONSULTATION',
+  retorno: 'RETURN',
+  previsao_retorno: 'EXPECTED_RETURN',
+  outros: 'OTHER'
+} as const
 
-const SITUATION_MAP: Record<string, string> = {
-  confirmada: "CONFIRMED",
-  desmarcada: "CANCELED",
-  pendente: "PENDING",
-};
+const REVERSE_TYPE_MAP = Object.fromEntries(
+  Object.entries(TYPE_MAP).map(([k, v]) => [v, k])
+) as Record<string, keyof typeof TYPE_MAP>
 
-const AppointmentModal = ({
+const STATUS_MAP = {
+  confirmada: 'CONFIRMED',
+  desmarcada: 'CANCELED',
+  pendente: 'PENDING'
+} as const
+
+const REVERSE_STATUS_MAP = Object.fromEntries(
+  Object.entries(STATUS_MAP).map(([k, v]) => [v, k])
+) as Record<string, keyof typeof STATUS_MAP>
+
+export default function AppointmentModal({
   open,
   onClose,
   selectedDate,
-}: AppointmentModalProps) => {
-  const { patients, loading: loadingPatients } = useGetPatient();
-  const { createAppointments, loading, error } = useCreateAppointments();
-  const { appointments, setAppointments, fetchAppointments } =
-    useGetAppointments();
-
-  const theme = useTheme();
+  appointment
+}: AppointmentModalProps) {
+  const { data: patients = [] } = usePatients()
+  const createAppt = useCreateAppointments()
+  const updateAppt = useUpdateAppointments()
 
   const {
     control,
     handleSubmit,
     register,
     setValue,
+    getValues,
     formState: { errors },
-    reset,
+    reset
   } = useForm<AppointmentFormData>({
     resolver: zodResolver(appointmentSchema),
     defaultValues: {
-      type: "consulta",
-      situation: "pendente",
+      type: 'consulta',
+      situation: 'pendente',
       patientId: 0,
-      placeOfService: "",
-      service: "",
+      placeOfService: '',
+      service: '',
       online_service: false,
-      startDate: "",
-      endDate: "",
-      timeZone: "UTC-03",
-      description: "",
-    },
-  });
+      startDate: '',
+      endDate: '',
+      timeZone: 'UTC-03',
+      description: ''
+    }
+  })
 
   useEffect(() => {
-    if (selectedDate) {
-      const startIso = selectedDate.toISOString().slice(0, 16);
-
-      const end = new Date(selectedDate.getTime() + 60 * 60 * 1000);
-      const endIso = end.toISOString().slice(0, 16);
-
-      setValue("startDate", startIso);
-      setValue("endDate", endIso);
+    if (appointment) {
+      reset({
+        type: REVERSE_TYPE_MAP[appointment.type],
+        situation: REVERSE_STATUS_MAP[appointment.status],
+        patientId: appointment.patient_id,
+        placeOfService: appointment.place_of_service,
+        service: appointment.service,
+        online_service: appointment.online_service,
+        startDate: appointment.start_time.slice(0, 16),
+        endDate: appointment.end_time.slice(0, 16),
+        timeZone: appointment.timezone,
+        description: appointment.description
+      })
+    } else if (selectedDate) {
+      const startIso = selectedDate.toISOString().slice(0, 16)
+      const endIso = new Date(selectedDate.getTime() + 60 * 60 * 1000).toISOString().slice(0, 16)
+      reset({ ...getValues(), startDate: startIso, endDate: endIso })
+    } else {
+      reset()
     }
-  }, [selectedDate, setValue]);
+  }, [appointment, selectedDate, reset, getValues])
+
+  const onSubmit = async (form: AppointmentFormData) => {
+    const payload = {
+      patient_id: Number(form.patientId),
+      type: TYPE_MAP[form.type],
+      status: STATUS_MAP[form.situation],
+      place_of_service: form.placeOfService,
+      service: form.service,
+      online_service: form.online_service,
+      start_time: form.startDate,
+      end_time: form.endDate,
+      timezone: form.timeZone,
+      description: form.description
+    }
+
+    try {
+      if (appointment) {
+        await updateAppt.mutateAsync({ id: appointment.id, data: payload })
+        toast.success('Agendamento atualizado')
+      } else {
+        await createAppt.mutateAsync(payload)
+        toast.success('Agendamento criado')
+      }
+      onClose()
+      reset()
+    } catch {
+      toast.error('erro ao salvar agendamento')
+    }
+  }
 
   const selectedBtnStyles = {
-    backgroundColor: "primary.main",
-    color: "#fff",
-    "&:hover": {
-      backgroundColor: "primary.dark",
-    },
-  };
+    backgroundColor: 'primary.main',
+    color: '#fff',
+    '&:hover': { backgroundColor: 'primary.dark' }
+  }
 
   const unselectedBtnStyles = {
-    backgroundColor: "grey.100",
-    color: "text.primary",
-    "&:hover": {
-      backgroundColor: "grey.200",
-    },
-  };
-
-  const onSubmit = async (data: AppointmentFormData) => {
-    try {
-      const response = await createAppointments({
-        patient_id: Number(data.patientId),
-        type: TYPE_MAP[data.type],
-        status: SITUATION_MAP[data.situation],
-        place_of_service: data.placeOfService,
-        service: data.service,
-        online_service: data.online_service,
-        start_time: data.startDate,
-        end_time: data.endDate,
-        timezone: data.timeZone,
-        description: data.description,
-      });
-
-      toast.success("Agendamento criado com sucesso");
-      setAppointments([...appointments, response]);
-      const auth = getAuth();
-      const currentUser = auth.currentUser;
-      if (currentUser) {
-        const token = await currentUser.getIdToken();
-        await fetchAppointments(token);
-      }
-
-      onClose();
-      reset();
-    } catch (error) {
-      toast.error("Erro ao criar agendamento");
-    }
-  };
+    backgroundColor: 'grey.100',
+    color: 'text.primary',
+    '&:hover': { backgroundColor: 'grey.200' }
+  }
 
   return (
     <Modal open={open} onClose={onClose}>
-      <Box
-        sx={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: 700,
-          bgcolor: "background.paper",
-          boxShadow: 24,
-          p: 4,
-          borderRadius: 2,
-          maxHeight: "90vh",
-          overflowY: "auto",
-        }}
-      >
-        <Typography variant="h4" mb={2} fontWeight={700}>
-          Agendamento
+      <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 700, bgcolor: 'background.paper', boxShadow: 24, p: 4, borderRadius: 2, maxHeight: '90vh', overflowY: 'auto' }}>
+        <Typography variant='h4' mb={2} fontWeight={700}>
+          {appointment ? 'Editar agendamento' : 'Novo agendamento'}
         </Typography>
+
         <form onSubmit={handleSubmit(onSubmit)}>
           <Typography sx={{ mb: 1, fontWeight: 600 }}>Tipo</Typography>
           <Controller
-            name="type"
+            name='type'
             control={control}
             render={({ field }) => (
               <ButtonGroup sx={{ mb: 2 }}>
-                <Button
-                  onClick={() => field.onChange("consulta")}
-                  sx={
-                    field.value === "consulta"
-                      ? selectedBtnStyles
-                      : unselectedBtnStyles
-                  }
-                >
-                  Consulta
-                </Button>
-                <Button
-                  onClick={() => field.onChange("retorno")}
-                  sx={
-                    field.value === "retorno"
-                      ? selectedBtnStyles
-                      : unselectedBtnStyles
-                  }
-                >
-                  Retorno
-                </Button>
-                <Button
-                  onClick={() => field.onChange("previsao_retorno")}
-                  sx={
-                    field.value === "previsao_retorno"
-                      ? selectedBtnStyles
-                      : unselectedBtnStyles
-                  }
-                >
-                  Previsão de retorno
-                </Button>
-                <Button
-                  onClick={() => field.onChange("outros")}
-                  sx={
-                    field.value === "outros"
-                      ? selectedBtnStyles
-                      : unselectedBtnStyles
-                  }
-                >
-                  Outros
-                </Button>
+                {['consulta', 'retorno', 'previsao_retorno', 'outros'].map(t => (
+                  <Button key={t} onClick={() => field.onChange(t)} sx={field.value === t ? selectedBtnStyles : unselectedBtnStyles}>
+                    {t.charAt(0).toUpperCase() + t.slice(1).replace('_', ' ')}
+                  </Button>
+                ))}
               </ButtonGroup>
             )}
           />
 
           <Typography fontWeight={700}>Situação</Typography>
           <Controller
-            name="situation"
+            name='situation'
             control={control}
             render={({ field }) => (
               <ButtonGroup sx={{ mb: 2, mt: 1 }}>
-                <Button
-                  onClick={() => field.onChange("confirmada")}
-                  sx={
-                    field.value === "confirmada"
-                      ? selectedBtnStyles
-                      : unselectedBtnStyles
-                  }
-                >
-                  Consulta confirmada
-                </Button>
-                <Button
-                  onClick={() => field.onChange("desmarcada")}
-                  sx={
-                    field.value === "desmarcada"
-                      ? selectedBtnStyles
-                      : unselectedBtnStyles
-                  }
-                >
-                  Desmarcada
-                </Button>
-                <Button
-                  onClick={() => field.onChange("pendente")}
-                  sx={
-                    field.value === "pendente"
-                      ? selectedBtnStyles
-                      : unselectedBtnStyles
-                  }
-                >
-                  Pendente
-                </Button>
+                {['confirmada', 'desmarcada', 'pendente'].map(s => (
+                  <Button key={s} onClick={() => field.onChange(s)} sx={field.value === s ? selectedBtnStyles : unselectedBtnStyles}>
+                    {s.charAt(0).toUpperCase() + s.slice(1)}
+                  </Button>
+                ))}
               </ButtonGroup>
             )}
           />
 
           <FormControl fullWidth sx={{ mt: 2 }}>
-            <InputLabel id="select-patient">Selecione um Paciente</InputLabel>
+            <InputLabel id='select-patient'>Selecione um Paciente</InputLabel>
             <Controller
-              name="patientId"
+              name='patientId'
               control={control}
               render={({ field }) => (
-                <Select
-                  {...field}
-                  labelId="select-patient"
-                  label="Paciente"
-                  error={!!errors.patientId}
-                >
-                  {!loadingPatients &&
-                    patients.map((patient) => (
-                      <MenuItem key={patient.id} value={patient.id}>
-                        {patient.name}
-                      </MenuItem>
-                    ))}
+                <Select {...field} labelId='select-patient' label='Paciente' error={!!errors.patientId}>
+                  {patients.map(p => (
+                    <MenuItem key={p.id} value={p.id}>
+                      {p.name}
+                    </MenuItem>
+                  ))}
                 </Select>
               )}
             />
           </FormControl>
 
-          <Stack sx={{ mt: 2, flexDirection: "row" }} spacing={1}>
-            <TextField
-              label="Local de atendimento"
-              sx={{ mt: 2, width: "70%" }}
-              {...register("placeOfService")}
-              error={!!errors.placeOfService}
-              defaultChecked={false}
-            />
-
+          <Stack sx={{ mt: 2 }} direction='row' spacing={1}>
+            <TextField label='Local de atendimento' sx={{ flex: 1 }} {...register('placeOfService')} error={!!errors.placeOfService} />
             <Controller
-              name="online_service"
+              name='online_service'
               control={control}
               render={({ field }) => (
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={field.value}
-                      onChange={(e) => field.onChange(e.target.checked)}
-                      color="primary"
-                    />
-                  }
-                  sx={{ mt: 2 }}
-                  label="Atendimento online"
-                />
+                <FormControlLabel control={<Checkbox checked={field.value} onChange={e => field.onChange(e.target.checked)} />} label='Atendimento online' />
               )}
             />
           </Stack>
 
-          <TextField
-            fullWidth
-            label="Serviço"
-            sx={{ mt: 2 }}
-            {...register("service")}
-            error={!!errors.service}
-          />
+          <TextField fullWidth label='Serviço' sx={{ mt: 2 }} {...register('service')} error={!!errors.service} />
 
-          <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
-            <TextField
-              label="Início"
-              type="datetime-local"
-              fullWidth
-              {...register("startDate")}
-              error={!!errors.startDate}
-              InputLabelProps={{ shrink: true }}
-            />
-            <TextField
-              label="Fim"
-              type="datetime-local"
-              fullWidth
-              {...register("endDate")}
-              error={!!errors.endDate}
-              InputLabelProps={{ shrink: true }}
-            />
+          <Stack direction='row' spacing={2} sx={{ mt: 2 }}>
+            <TextField label='Início' type='datetime-local' fullWidth {...register('startDate')} error={!!errors.startDate} InputLabelProps={{ shrink: true }} />
+            <TextField label='Fim' type='datetime-local' fullWidth {...register('endDate')} error={!!errors.endDate} InputLabelProps={{ shrink: true }} />
           </Stack>
 
-          <TextField
-            fullWidth
-            label="Fuso horário"
-            sx={{ mt: 2 }}
-            {...register("timeZone")}
-            error={!!errors.timeZone}
-          />
+          <TextField fullWidth label='Fuso horário' sx={{ mt: 2 }} {...register('timeZone')} error={!!errors.timeZone} />
+          <TextField fullWidth multiline rows={3} label='Descrição' sx={{ mt: 2 }} {...register('description')} error={!!errors.description} />
 
-          <TextField
-            fullWidth
-            multiline
-            rows={3}
-            label="Descrição"
-            sx={{ mt: 2 }}
-            {...register("description")}
-            error={!!errors.description}
-          />
-
-          <Stack
-            direction="row"
-            spacing={2}
-            justifyContent="flex-end"
-            sx={{ mt: 4 }}
-          >
-            <Button variant="outlined" onClick={onClose}>
-              Cancelar
+          <Stack direction='row' spacing={2} justifyContent='flex-end' sx={{ mt: 4 }}>
+            <Button variant='outlined' onClick={onClose}>
+              cancelar
             </Button>
-            <Button type="submit" variant="contained">
-              Salvar
-            </Button>
+            <LoadingButton type='submit' variant='contained' loading={appointment ? updateAppt.isPending : createAppt.isPending}>
+              salvar
+            </LoadingButton>
           </Stack>
         </form>
       </Box>
     </Modal>
-  );
-};
-
-export default AppointmentModal;
+  )
+}

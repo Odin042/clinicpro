@@ -1,71 +1,17 @@
-import { useState } from "react"
-import { createUserWithEmailAndPassword } from "firebase/auth"
-import { auth } from "../../../config/firebasedatabase"
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { registerUser } from '../../../services/user/user'
 
-interface UseCreateUserReturn {
-  createUser: (
-    email: string,
-    password: string,
-    additionalData: Record<string, any>
-  ) => Promise<any>
-  loading: boolean
-  error: string | null
-}
+export function useCreateUser() {
+  const qc = useQueryClient()
 
-export const useCreateUser = (): UseCreateUserReturn => {
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  return useMutation({
+    mutationFn: ({ email, password, extra }: { email: string; password: string; extra: any }) =>
+      registerUser(email, password, extra),
 
-  const createUser = async (
-    email: string,
-    password: string,
-    additionalData: Record<string, any>
-  ) => {
-    setLoading(true)
-    setError(null)
-
-    let user: any = null
-
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-      user = userCredential.user
-
-      // 🔥 Força renovação do token após criação
-      await user.getIdToken(true)
-
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: user.email,
-          password,
-          ...additionalData,
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error(`Erro na API: ${response.status}`)
-      }
-
-      const result = await response.json()
-
-      return result.user
-
-    } catch (error: any) {
-      if (user) {
-        await user.delete() 
-      }
-      setError(error.message || "Ocorreu um erro")
-      throw error
-
-    } finally {
-      setLoading(false)
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['users'] })
     }
-  }
-
-  return { createUser, loading, error }
+  })
 }
 
 export default useCreateUser

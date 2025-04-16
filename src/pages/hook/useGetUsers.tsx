@@ -1,22 +1,11 @@
-import axios from "axios";
-import { getAuth } from "firebase/auth";
+import { useQuery } from '@tanstack/react-query'
+import { listUsers } from '../../services/user/user'
 
-export async function useGetUsers() {
-  const auth = getAuth();
-  const currentUser = auth.currentUser;
-  if (!currentUser) {
-    throw new Error("Usuário não está logado no Firebase.");
-  }
-
-  const token = await currentUser.getIdToken();
-
-  const response = await axios.get(`${import.meta.env.VITE_API_URL}/user`, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  });
-
-  return response.data;
+export function useUsers() {
+  return useQuery({
+    queryKey: ['users'],
+    queryFn: listUsers,
+    staleTime: 1000 * 60,
+    refetchOnWindowFocus: false
+  })
 }
-
-export default useGetUsers;
