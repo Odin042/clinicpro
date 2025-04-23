@@ -14,6 +14,7 @@ import {
 import { ChevronLeft, Menu, Home } from "@mui/icons-material"
 import EditCalendarIcon from "@mui/icons-material/EditCalendar"
 import ExitToAppIcon from "@mui/icons-material/ExitToApp"
+import People from '@mui/icons-material/People'
 import logo from "../../../../assets/clinic360prowhite.png"
 import { useNavigate } from "react-router-dom"
 import { useTheme } from "@mui/material/styles"
@@ -106,6 +107,12 @@ const SideBar = ({ setActiveComponent, onToggle }: any) => {
                 <ListItemButton onClick={() => { setActiveComponent("scheduling"); if (isMobile) toggleDrawer() }}>
                   <EditCalendarIcon sx={{ color: "white" }} />
                   {open && <ListItemText primary="Agendamentos" sx={{ ml: 2, color: "white" }} />}
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton onClick={() => { setActiveComponent("patients"); if (isMobile) toggleDrawer() }}>
+                  <People sx={{ color: "white" }} />
+                  {open && <ListItemText primary="Pacientes" sx={{ ml: 2, color: "white" }} />}
                 </ListItemButton>
               </ListItem>
             </List>

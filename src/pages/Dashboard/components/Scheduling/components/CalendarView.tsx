@@ -1,69 +1,104 @@
-import React, { useEffect, useRef } from "react"
-import FullCalendar from "@fullcalendar/react"
-import dayGridPlugin from "@fullcalendar/daygrid"
-import timeGridPlugin from "@fullcalendar/timegrid"
-import interactionPlugin from "@fullcalendar/interaction"
-import ptBrLocale from "@fullcalendar/core/locales/pt-br"
-import { CalendarApi, EventApi, EventMouseEnterArg, EventMouseLeaveArg } from "@fullcalendar/core"
-import { Box, Popover, Typography } from "@mui/material"
-import { Dayjs } from "dayjs"
-import VideoCallIcon from '@mui/icons-material/VideoCall';;
+import React, { useEffect, useRef } from "react";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import ptBrLocale from "@fullcalendar/core/locales/pt-br";
+import {
+  CalendarApi,
+  EventApi,
+  EventChangeArg,
+  EventMouseEnterArg,
+  EventMouseLeaveArg,
+} from "@fullcalendar/core";
+import { Box, Popover, Typography } from "@mui/material";
+import { Dayjs } from "dayjs";
+import VideoCallIcon from "@mui/icons-material/VideoCall";
+import useUpdateAppointments from "../../../../hook/useUpdateAppointments";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface CalendarEvent {
-  id: number | string
-  title: string
-  start: string
-  end?: string
-  backgroundColor?: string
-  textColor?: string
-  display?: string
-  extendedProps?: { [key: string]: any }
+  id: number | string;
+  title: string;
+  start: string;
+  end?: string;
+  backgroundColor?: string;
+  textColor?: string;
+  display?: string;
+  extendedProps?: { [key: string]: any };
 }
 
 interface CalendarViewProps {
-  events: CalendarEvent[]
-  onDateClick: (date: Date) => void
-  selectedDate: Dayjs
+  events: CalendarEvent[];
+  onDateClick: (date: Date) => void;
+  selectedDate: Dayjs;
 }
 
-export default function CalendarView({ events, onDateClick, selectedDate }: CalendarViewProps) {
-  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null)
-  const [hoveredEvent, setHoveredEvent] = React.useState<EventApi | null>(null)
+export default function CalendarView({
+  events,
+  onDateClick,
+  selectedDate,
+}: CalendarViewProps) {
+  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
+  const [hoveredEvent, setHoveredEvent] = React.useState<EventApi | null>(null);
+  const qc = useQueryClient();
 
-  console.log("events", events)
-
-  const calendarRef = useRef<FullCalendar>(null)
+  const { mutate } = useUpdateAppointments();
+  const calendarRef = useRef<FullCalendar>(null);
 
   function handleDateClick(info: any) {
-    const calendarApi = calendarRef.current?.getApi?.()
-    if (!calendarApi) return
-  
+    const calendarApi = calendarRef.current?.getApi?.();
+    if (!calendarApi) return;
+
     if (calendarApi.view.type === "dayGridMonth") {
-      calendarApi.changeView("timeGridDay", info.date)
-    } 
-    else {
-      const d = new Date(info.date)
-      d.setMinutes(d.getMinutes() - d.getTimezoneOffset())
-      onDateClick(d)
+      calendarApi.changeView("timeGridDay", info.date);
+    } else {
+      const d = new Date(info.date);
+      d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+      onDateClick(d);
     }
+  }
+
+  function handleEventChange(info: EventDropArg | EventResizeDoneArg) {
+    const { event } = info;
+    const payload = {
+      start_time: event.start?.toISOString(),
+      end_time: event.end?.toISOString(),
+    };
+
+    mutate(
+      { id: event.id, data: payload },
+      {
+        onError: () => {
+          info.revert?.();
+        },
+
+        onSuccess: (appointment) => {
+          qc.setQueryData(["appointments"], (old: any[] = []) =>
+            old.map((a) => (a.id === appointment.id ? appointment : a))
+          );
+        },
+      }
+    );
   }
 
   function handleEventMouseEnter(info: EventMouseEnterArg) {
-    setAnchorEl(info.el)
-    setHoveredEvent(info.event)
+    setAnchorEl(info.el);
+    setHoveredEvent(info.event);
   }
 
   function handleEventMouseLeave(info: EventMouseLeaveArg) {
-    setAnchorEl(null)
-    setHoveredEvent(null)
+    setAnchorEl(null);
+    setHoveredEvent(null);
   }
 
   useEffect(() => {
-    const calendarObj: CalendarApi | undefined = calendarRef.current?.getApi?.()
+    const calendarObj: CalendarApi | undefined =
+      calendarRef.current?.getApi?.();
     if (calendarObj && selectedDate) {
-      calendarObj.gotoDate(selectedDate.toDate())
+      calendarObj.gotoDate(selectedDate.toDate());
     }
-  }, [selectedDate])
+  }, [selectedDate]);
 
   return (
     <Box flex={1} position="relative" overflow="auto">
@@ -79,7 +114,11 @@ export default function CalendarView({ events, onDateClick, selectedDate }: Cale
           right: "dayGridMonth,timeGridWeek,timeGridDay",
         }}
         events={events}
-        dateClick={handleDateClick}
+        editable
+        eventDrop={handleEventChange}
+        eventResize={handleEventChange}
+        dateClick={(info) => onDateClick(info.date)}
+        height="auto"
         eventMouseEnter={handleEventMouseEnter}
         eventMouseLeave={handleEventMouseLeave}
         slotLabelFormat={{ hour: "2-digit", minute: "2-digit", hour12: false }}
@@ -87,8 +126,8 @@ export default function CalendarView({ events, onDateClick, selectedDate }: Cale
         dayHeaderFormat={{ weekday: "long" }}
         dayHeaderClassNames={() => "capitalize"}
         eventContent={(arg) => {
-          const onlineService = arg.event.extendedProps?.online_service
-        
+          const onlineService = arg.event.extendedProps?.online_service;
+
           return (
             <Box
               sx={{
@@ -101,71 +140,16 @@ export default function CalendarView({ events, onDateClick, selectedDate }: Cale
                 fontSize: "0.75rem",
               }}
             >
-              {onlineService && (  
+              {onlineService && (
                 <VideoCallIcon sx={{ fontSize: 20, mr: 0.5 }} />
               )}
               <span>
                 {arg.timeText} {arg.event.title}
               </span>
             </Box>
-          )
+          );
         }}
-        height="auto"
       />
-
-      <Popover
-        open={Boolean(anchorEl)}
-        anchorEl={anchorEl}
-        onClose={() => {
-          setAnchorEl(null)
-          setHoveredEvent(null)
-        }}
-        disablePortal
-        disableRestoreFocus
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        transformOrigin={{ vertical: "bottom", horizontal: "center" }}
-        slotProps={{
-          paper: {
-            sx: { mt: 2, pointerEvents: "none" },
-          },
-        }}
-      >
-        {hoveredEvent && (
-          <Box p={2} sx={{ maxWidth: 300 }}>
-            <Typography variant="subtitle1" fontWeight="bold">
-              {hoveredEvent.title}
-            </Typography>
-            {hoveredEvent.start && (
-              <Typography variant="body2">
-                <strong>Início: </strong>
-                {new Date(hoveredEvent.start).toLocaleString("pt-BR")}
-              </Typography>
-            )}
-            {hoveredEvent.end && (
-              <Typography variant="body2">
-                <strong>Fim: </strong>
-                {new Date(hoveredEvent.end).toLocaleString("pt-BR")}
-              </Typography>
-            )}
-            {hoveredEvent.extendedProps && (
-              <>
-                <Typography variant="body2">
-                  <strong>Local: </strong>
-                  {hoveredEvent.extendedProps.place_of_service || "N/A"}
-                </Typography>
-                <Typography variant="body2">
-                  <strong>Serviço: </strong>
-                  {hoveredEvent.extendedProps.service || "N/A"}
-                </Typography>
-                <Typography variant="body2">
-                  <strong>Status: </strong>
-                  {hoveredEvent.extendedProps.status || "N/A"}
-                </Typography>
-              </>
-            )}
-          </Box>
-        )}
-      </Popover>
     </Box>
-  )
+  );
 }
