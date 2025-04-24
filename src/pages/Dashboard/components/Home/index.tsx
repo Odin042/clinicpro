@@ -19,9 +19,9 @@ import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import PatientRegistrationModal from "./components/PatientResgistrationModal";
 import { AuthContext } from "../../../../AuthContext";
 import AppointmentModal from "./components/AppointmentsModal";
-import { useGetAppointments } from "../../../hook/useGetAppointments";
+import { useGetAppointments } from "../../../../hooks/useGetAppointments";
 import { format, startOfDay, endOfDay } from "date-fns";
-import useGetPatient from "../../../hook/useGetPatients";
+import useGetPatient from "../../../../hooks/useGetPatients";
 import { useNavigate } from "react-router-dom";
 
 const TYPE_MAP_PT: Record<string, string> = {
@@ -171,6 +171,7 @@ const Home = () => {
               variant="outlined"
               startIcon={<PeopleIcon />}
               sx={{ minWidth: 120 }}
+              onClick={() => navigate("/patients")}
             >
               Meus pacientes
             </Button>
@@ -178,6 +179,7 @@ const Home = () => {
               variant="outlined"
               startIcon={<CalendarTodayIcon />}
               sx={{ minWidth: 120 }}
+              onClick={() => navigate("/calendar")}
             >
               Minha agenda
             </Button>

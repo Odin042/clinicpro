@@ -12,7 +12,7 @@ import {
   Box,
 } from "@mui/material";
 import { Speciality } from "./Speciality";
-import { useCreateUser } from "../../hooks/useCreateUser";
+import { useCreateUser } from "../../../../hooks/useCreateUser";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import Logo from "../../../../assets/clinic360prologo.png";
@@ -76,7 +76,7 @@ export const RegisterForm = () => {
     } catch {
       toast.error("erro inesperado, tente novamente");
     }
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
