@@ -14,7 +14,7 @@ import {
 import { Box, Popover, Typography } from "@mui/material";
 import { Dayjs } from "dayjs";
 import VideoCallIcon from "@mui/icons-material/VideoCall";
-import useUpdateAppointments from "../../../../hook/useUpdateAppointments";
+import useUpdateAppointments from "../../../../../hooks/useUpdateAppointments";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface CalendarEvent {

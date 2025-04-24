@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query'
-import { signIn } from '../../../services/login/login'
+import { signIn } from '../services/login/login'
 import { useContext } from 'react'
-import { AuthContext } from '../../../AuthContext'
+import { AuthContext } from '../AuthContext'
 
 export function useLogin() {
   const { refreshUser } = useContext(AuthContext)

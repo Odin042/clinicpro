@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { createAppointment } from '../../../services/appointments/appointments'
+import { createAppointment } from '../services/appointments/appointments'
 
 export function useCreateAppointments() {
   const qc = useQueryClient()
