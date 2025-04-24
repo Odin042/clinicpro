@@ -27,7 +27,6 @@ export default function AppRoutes() {
 
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<DashboardHome />} />
-
           <Route path="patients" element={<PatientsList />} />
           <Route path='patient/:id' element={<PatientDetails />} /> 
           <Route path="calendar" element={<CalendarAppointments />} />
