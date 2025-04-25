@@ -13,7 +13,7 @@ import { RegisterForm } from "./pages/Register/components/RegisterForm"
 import { Login } from "./pages/Login/LoginForm"
 import ForgotPassword from "./pages/components/ForgotPassword"
 import ResetPassword from "./pages/ExternalResetPassword"
-import PatientDetails from "./pages/Dashboard/components/Home/PatientsList/components"
+import PatientDetails from "./pages/Dashboard/components/Home/PatientsList/components/PatientDetails/PatientDetails"
 
 export default function AppRoutes() {
   return (
