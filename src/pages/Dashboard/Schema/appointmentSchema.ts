@@ -9,6 +9,7 @@ export const appointmentSchema = z.object({
   .min(1, "Selecione um paciente."),
   placeOfService: z.string().nonempty(),
   service: z.string().nonempty(),
+  online_service: z.boolean(),
   startDate: z.string().nonempty(),
   endDate: z.string(),
   timeZone: z.string().nonempty(),

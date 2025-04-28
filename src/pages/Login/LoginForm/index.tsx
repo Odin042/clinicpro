@@ -1,41 +1,35 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Button,
-  TextField,
-  Typography,
-  Stack,
-  Box
-} from "@mui/material";
-import { auth } from "../../../config/firebasedatabase";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { Box, Button, TextField, Typography, Stack } from "@mui/material";
 import Logo from "../../../assets/clinic360prologo.png";
+import { useLogin } from "../../../hooks/useLoginUser";
 
 export const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [localError, setLocalError] = useState<string | null>(null);
+
+  const { mutateAsync: login, isPending } = useLogin();
+
   const handleLogin = async () => {
-    setError(null);
+    setLocalError(null);
+
     if (!email.includes("@")) {
-      setError("Por favor, insira um email válido.");
+      setLocalError("Por favor, insira um email válido.");
       return;
     }
     if (password.length < 6) {
-      setError("A senha deve ter pelo menos 6 caracteres.");
+      setLocalError("A senha deve ter pelo menos 6 caracteres.");
       return;
     }
-    setLoading(true);
+
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      await login({ email, password });
       navigate("/dashboard");
     } catch (err) {
-      setError("Erro ao fazer login. Verifique suas credenciais.");
-    } finally {
-      setLoading(false);
+      setLocalError("Erro ao fazer login. Verifique suas credenciais.");
     }
   };
 
@@ -78,7 +72,8 @@ export const Login = () => {
           variant="h6"
           sx={{ textAlign: "center", maxWidth: "500px", mt: 2 }}
         >
-          Faça login para acessar sua conta e gerenciar seus pacientes, agendamentos e muito mais.
+          Faça login para acessar sua conta e gerenciar seus pacientes,
+          agendamentos e muito mais.
         </Typography>
       </Box>
       <Box
@@ -96,22 +91,27 @@ export const Login = () => {
           overflowY: "auto",
         }}
       >
-        <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: "bold", mb: 3 }}>
+        <Typography
+          variant="h4"
+          align="center"
+          gutterBottom
+          sx={{ fontWeight: "bold", mb: 3 }}
+        >
           Login
         </Typography>
-        {error && (
+
+        {localError && (
           <Typography color="error" sx={{ mb: 2 }}>
-            {error}
+            {localError}
           </Typography>
         )}
+
         <TextField
           label="Email"
           variant="outlined"
           fullWidth
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          error={!!error && !email.includes("@")} 
-          helperText={!!error && !email.includes("@") ? "Insira um email válido." : ""}
           sx={{ mb: 2 }}
         />
         <TextField
@@ -121,21 +121,26 @@ export const Login = () => {
           fullWidth
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          error={!!error && password.length < 6}
-          helperText={!!error && password.length < 6 ? "Senha muito curta." : ""}
           sx={{ mb: 2 }}
         />
-        <Button variant="text" color="primary" onClick={() => navigate("/forgot-password")} sx={{ mb: 2 }}>
+        <Button
+          variant="text"
+          color="primary"
+          onClick={() => navigate("/forgot-password")}
+          sx={{ mb: 2 }}
+        >
           Esqueceu sua senha?
         </Button>
         <Button
           variant="contained"
           color="primary"
+          loading={isPending}
+          loadingIndicator="Entrando…"
           onClick={handleLogin}
-          disabled={loading || !email || !password}
+          disabled={!email || !password || isPending}
           sx={{ width: "100%", mb: 2 }}
         >
-          {loading ? "Entrando..." : "Entrar"}
+          {"Entrar"}
         </Button>
         <Button
           variant="contained"

@@ -12,16 +12,19 @@ import {
   Box,
 } from "@mui/material";
 import { Speciality } from "./Speciality";
-import { useCreateUser } from "../../hooks/useCreateUser";
+import { useCreateUser } from "../../../../hooks/useCreateUser";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import Logo from "../../../../assets/clinic360prologo.png";
 import { registerFormSchema } from "../../../schemas/RegisterSchema";
 import { estadosBrasileiros } from "../../../../mocks/states";
 import { formatCpfCnpj, formatPhone } from "../../../../utils/formats";
+import { AuthContext } from "../../../../AuthContext";
+import { useContext } from "react";
 
 export const RegisterForm = () => {
-  const { createUser, loading } = useCreateUser();
+  const { mutateAsync: createUser, isPending } = useCreateUser();
+  const { refreshUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const {
@@ -60,101 +63,98 @@ export const RegisterForm = () => {
     } = data;
 
     try {
-      await createUser(email, password, {
-        speciality,
-        username,
-        cpf_cnpj,
-        gender,
-        register,
-        phone,
-        uf,
+      await createUser({
+        email,
+        password,
+        extra: { speciality, username, cpf_cnpj, gender, register, phone, uf },
       });
 
-      toast.success("Usuário criado com sucesso");
+      await refreshUser();
+      toast.success("usuário criado com sucesso");
       reset();
       navigate("/dashboard");
-    } catch (err) {
-      toast.error("Erro inesperado. Tente novamente");
+    } catch {
+      toast.error("erro inesperado, tente novamente");
     }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-    <Stack
-      direction={{ xs: "column", sm: "row" }}
-      sx={{
-        width: "100vw",
-        height: "100vh",
-        overflowY: { xs: "auto", sm: "hidden" },
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <Box
+      <Stack
+        direction={{ xs: "column", sm: "row" }}
         sx={{
-          flex: 1,
-          height: "100%",
-          display: { xs: "none", sm: "flex" },
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          bgcolor: "#f5f5f5",
-          px: 4,
-        }}
-      >
-        <img src={Logo} alt="Logo" style={{ maxWidth: 200 }} />
-        <Typography
-          variant="h3"
-          sx={{
-            fontWeight: "bold",
-            mb: 2,
-            textAlign: "center",
-            maxWidth: "500px",
-          }}
-        >
-          Bem-vindo ao Clinic360
-        </Typography>
-        <Typography
-          variant="h6"
-          sx={{
-            textAlign: "center",
-            maxWidth: "500px",
-            mt: 2,
-          }}
-        >
-          Cadastre-se e tenha acesso a um sistema completo de gestão de
-          consultórios. Gerencie pacientes, agendamentos e muito mais com
-          facilidade.
-        </Typography>
-      </Box>
-      <Box
-        sx={{
-          flex: 1,
-          minHeight: "100%",
+          width: "100vw",
+          height: "100vh",
+          overflowY: { xs: "auto", sm: "hidden" },
           display: "flex",
-          flexDirection: "column",
-          justifyContent: "flex-start",
           alignItems: "center",
-          bgcolor: "#fff",
-          p: 4,
-          maxWidth: { xs: "100%", sm: "400px" },
-          width: "100%",
-          overflowY: "auto",
+          justifyContent: "center",
         }}
       >
-        <Typography
-          variant="h4"
-          align="center"
-          gutterBottom
+        <Box
           sx={{
-            fontWeight: "bold",
-            mb: 3,
-            mt: { xs: 2, sm: 0 },
+            flex: 1,
+            height: "100%",
+            display: { xs: "none", sm: "flex" },
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            bgcolor: "#f5f5f5",
+            px: 4,
           }}
         >
-          Cadastro
-        </Typography>
+          <img src={Logo} alt="Logo" style={{ maxWidth: 200 }} />
+          <Typography
+            variant="h3"
+            sx={{
+              fontWeight: "bold",
+              mb: 2,
+              textAlign: "center",
+              maxWidth: "500px",
+            }}
+          >
+            Bem-vindo ao Clinic360
+          </Typography>
+          <Typography
+            variant="h6"
+            sx={{
+              textAlign: "center",
+              maxWidth: "500px",
+              mt: 2,
+            }}
+          >
+            Cadastre-se e tenha acesso a um sistema completo de gestão de
+            consultórios. Gerencie pacientes, agendamentos e muito mais com
+            facilidade.
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            flex: 1,
+            minHeight: "100%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "flex-start",
+            alignItems: "center",
+            bgcolor: "#fff",
+            p: 4,
+            maxWidth: { xs: "100%", sm: "400px" },
+            width: "100%",
+            overflowY: "auto",
+          }}
+        >
+          <Typography
+            variant="h4"
+            align="center"
+            gutterBottom
+            sx={{
+              fontWeight: "bold",
+              mb: 3,
+              mt: { xs: 2, sm: 0 },
+            }}
+          >
+            Cadastro
+          </Typography>
           <Stack spacing={3}>
             <Controller
               name="username"
@@ -322,14 +322,14 @@ export const RegisterForm = () => {
                 type="submit"
                 variant="contained"
                 color="primary"
-                disabled={loading}
+                disabled={isPending}
               >
-                {loading ? "Salvando..." : "Salvar"}
+                {isPending ? "Salvando..." : "Salvar"}
               </Button>
             </Stack>
           </Stack>
-      </Box>
-    </Stack>
+        </Box>
+      </Stack>
     </form>
   );
 };

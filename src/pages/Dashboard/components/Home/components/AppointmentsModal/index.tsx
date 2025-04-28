@@ -1,62 +1,75 @@
-import React from "react"
 import {
   Modal,
   Box,
   Typography,
   TextField,
-  Button,
   Stack,
+  Button,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
-  ToggleButtonGroup,
-  ToggleButton,
   ButtonGroup,
-} from "@mui/material"
-import { useForm, Controller } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
+  Checkbox,
+  FormControlLabel,
+} from "@mui/material";
+import { LoadingButton } from "@mui/lab";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   appointmentSchema,
   AppointmentFormData,
-} from "../../../../Schema/appointmentSchema"
-import useGetPatient from "../../../../../hook/useGetPatient"
-import { useCreateAppointments } from "../../../../../Register/hooks/useCreateAppointments"
-import { useTheme } from "@mui/material/styles"
-import { toast } from "react-toastify"
-import useGetAppointments from "../../../../../hook/useGetAppointments"
-
-
+} from "../../../../Schema/appointmentSchema";
+import { usePatients } from "../../../../../../hooks/useGetPatients";
+import { useCreateAppointments } from "../../../../../../hooks/useCreateAppointments";
+import { useUpdateAppointments } from "../../../../../../hooks/useUpdateAppointments";
+import { useEffect } from "react";
+import { toast } from "react-toastify";
 
 interface AppointmentModalProps {
-  open: boolean
-  onClose: () => void
+  open: boolean;
+  onClose: () => void;
+  selectedDate?: Date | null;
+  appointment?: Appointment;
 }
 
-const TYPE_MAP: Record<string, string> = {
+const TYPE_MAP = {
   consulta: "CONSULTATION",
   retorno: "RETURN",
   previsao_retorno: "EXPECTED_RETURN",
   outros: "OTHER",
-}
+} as const;
 
-const SITUATION_MAP: Record<string, string> = {
+const REVERSE_TYPE_MAP = Object.fromEntries(
+  Object.entries(TYPE_MAP).map(([k, v]) => [v, k])
+) as Record<string, keyof typeof TYPE_MAP>;
+
+const STATUS_MAP = {
   confirmada: "CONFIRMED",
   desmarcada: "CANCELED",
   pendente: "PENDING",
-}
+} as const;
 
-const AppointmentModal = ({ open, onClose }: AppointmentModalProps) => {
-  const { patients, loading: loadingPatients } = useGetPatient()
-  const { appointments, loading: loadingAppointments } = useGetAppointments()
-  console.log('modal',appointments)
-  const { createAppointments , loading, error } = useCreateAppointments()
-  const theme = useTheme()
+const REVERSE_STATUS_MAP = Object.fromEntries(
+  Object.entries(STATUS_MAP).map(([k, v]) => [v, k])
+) as Record<string, keyof typeof STATUS_MAP>;
+
+export default function AppointmentModal({
+  open,
+  onClose,
+  selectedDate,
+  appointment,
+}: AppointmentModalProps) {
+  const { data: patients = [] } = usePatients();
+  const createAppt = useCreateAppointments();
+  const updateAppt = useUpdateAppointments();
 
   const {
     control,
     handleSubmit,
     register,
+    setValue,
+    getValues,
     formState: { errors },
     reset,
   } = useForm<AppointmentFormData>({
@@ -67,51 +80,79 @@ const AppointmentModal = ({ open, onClose }: AppointmentModalProps) => {
       patientId: 0,
       placeOfService: "",
       service: "",
+      online_service: false,
       startDate: "",
       endDate: "",
       timeZone: "UTC-03",
       description: "",
     },
-  })
+  });
+
+  useEffect(() => {
+    if (appointment) {
+      reset({
+        type: REVERSE_TYPE_MAP[appointment.type],
+        situation: REVERSE_STATUS_MAP[appointment.status],
+        patientId: appointment.patient_id,
+        placeOfService: appointment.place_of_service,
+        service: appointment.service,
+        online_service: appointment.online_service,
+        startDate: appointment.start_time.slice(0, 16),
+        endDate: appointment.end_time.slice(0, 16),
+        timeZone: appointment.timezone,
+        description: appointment.description,
+      });
+    } else if (selectedDate) {
+      const startIso = selectedDate.toISOString().slice(0, 16);
+      const endIso = new Date(selectedDate.getTime() + 60 * 60 * 1000)
+        .toISOString()
+        .slice(0, 16);
+      reset({ ...getValues(), startDate: startIso, endDate: endIso });
+    } else {
+      reset();
+    }
+  }, [appointment, selectedDate, reset, getValues]);
+
+  const onSubmit = async (form: AppointmentFormData) => {
+    const payload = {
+      patient_id: Number(form.patientId),
+      type: TYPE_MAP[form.type],
+      status: STATUS_MAP[form.situation],
+      place_of_service: form.placeOfService,
+      service: form.service,
+      online_service: form.online_service,
+      start_time: form.startDate,
+      end_time: form.endDate,
+      timezone: form.timeZone,
+      description: form.description,
+    };
+
+    try {
+      if (appointment) {
+        await updateAppt.mutateAsync({ id: appointment.id, data: payload });
+        toast.success("Agendamento atualizado");
+      } else {
+        await createAppt.mutateAsync(payload);
+        toast.success("Agendamento criado");
+      }
+      onClose();
+      reset();
+    } catch {
+      toast.error("erro ao salvar agendamento");
+    }
+  };
 
   const selectedBtnStyles = {
     backgroundColor: "primary.main",
     color: "#fff",
-    "&:hover": {
-      backgroundColor: "primary.dark",
-    },
-  }
+    "&:hover": { backgroundColor: "primary.dark" },
+  };
 
   const unselectedBtnStyles = {
     backgroundColor: "grey.100",
     color: "text.primary",
-    "&:hover": {
-      backgroundColor: "grey.200",
-    },
-  }
-
-  const onSubmit = async (data: AppointmentFormData) => {
-    try {
-      await createAppointments({
-        patient_id: Number(data.patientId),
-        type: TYPE_MAP[data.type], 
-        status: SITUATION_MAP[data.situation], 
-        place_of_service: data.placeOfService,
-        service: data.service,
-        start_time: data.startDate,
-        end_time: data.endDate,
-        timezone: data.timeZone,
-        description: data.description,
-      })
-  
-      onClose()
-      toast.success("Agendamento criado com sucesso")
-      reset()
-    } catch (error) {
-      toast.error("Erro inesperado. Tente novamente")
-      console.error(error)
-    }
-  }
+    "&:hover": { backgroundColor: "grey.200" },
+  };
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -131,55 +172,31 @@ const AppointmentModal = ({ open, onClose }: AppointmentModalProps) => {
         }}
       >
         <Typography variant="h4" mb={2} fontWeight={700}>
-          Agendamento
+          {appointment ? "Editar agendamento" : "Novo agendamento"}
         </Typography>
+
         <form onSubmit={handleSubmit(onSubmit)}>
-        <Typography sx={{ mb: 1, fontWeight: 600 }}>Tipo</Typography>
+          <Typography sx={{ mb: 1, fontWeight: 600 }}>Tipo</Typography>
           <Controller
             name="type"
             control={control}
             render={({ field }) => (
               <ButtonGroup sx={{ mb: 2 }}>
-                <Button
-                  onClick={() => field.onChange("consulta")}
-                  sx={
-                    field.value === "consulta"
-                      ? selectedBtnStyles
-                      : unselectedBtnStyles
-                  }
-                >
-                  Consulta
-                </Button>
-                <Button
-                  onClick={() => field.onChange("retorno")}
-                  sx={
-                    field.value === "retorno"
-                      ? selectedBtnStyles
-                      : unselectedBtnStyles
-                  }
-                >
-                  Retorno
-                </Button>
-                <Button
-                  onClick={() => field.onChange("previsao_retorno")}
-                  sx={
-                    field.value === "previsao_retorno"
-                      ? selectedBtnStyles
-                      : unselectedBtnStyles
-                  }
-                >
-                  Previsão de retorno
-                </Button>
-                <Button
-                  onClick={() => field.onChange("outros")}
-                  sx={
-                    field.value === "outros"
-                      ? selectedBtnStyles
-                      : unselectedBtnStyles
-                  }
-                >
-                  Outros
-                </Button>
+                {["consulta", "retorno", "previsao_retorno", "outros"].map(
+                  (t) => (
+                    <Button
+                      key={t}
+                      onClick={() => field.onChange(t)}
+                      sx={
+                        field.value === t
+                          ? selectedBtnStyles
+                          : unselectedBtnStyles
+                      }
+                    >
+                      {t.charAt(0).toUpperCase() + t.slice(1).replace("_", " ")}
+                    </Button>
+                  )
+                )}
               </ButtonGroup>
             )}
           />
@@ -190,36 +207,19 @@ const AppointmentModal = ({ open, onClose }: AppointmentModalProps) => {
             control={control}
             render={({ field }) => (
               <ButtonGroup sx={{ mb: 2, mt: 1 }}>
-                <Button
-                  onClick={() => field.onChange("confirmada")}
-                  sx={
-                    field.value === "confirmada"
-                      ? selectedBtnStyles
-                      : unselectedBtnStyles
-                  }
-                >
-                  Consulta confirmada
-                </Button>
-                <Button
-                  onClick={() => field.onChange("desmarcada")}
-                  sx={
-                    field.value === "desmarcada"
-                      ? selectedBtnStyles
-                      : unselectedBtnStyles
-                  }
-                >
-                  Desmarcada
-                </Button>
-                <Button
-                  onClick={() => field.onChange("pendente")}
-                  sx={
-                    field.value === "pendente"
-                      ? selectedBtnStyles
-                      : unselectedBtnStyles
-                  }
-                >
-                  Pendente
-                </Button>
+                {["confirmada", "desmarcada", "pendente"].map((s) => (
+                  <Button
+                    key={s}
+                    onClick={() => field.onChange(s)}
+                    sx={
+                      field.value === s
+                        ? selectedBtnStyles
+                        : unselectedBtnStyles
+                    }
+                  >
+                    {s.charAt(0).toUpperCase() + s.slice(1)}
+                  </Button>
+                ))}
               </ButtonGroup>
             )}
           />
@@ -236,24 +236,39 @@ const AppointmentModal = ({ open, onClose }: AppointmentModalProps) => {
                   label="Paciente"
                   error={!!errors.patientId}
                 >
-                  {!loadingPatients &&
-                    patients.map((patient) => (
-                      <MenuItem key={patient.id} value={patient.id}>
-                        {patient.name}
-                      </MenuItem>
-                    ))}
+                  {patients.map((p) => (
+                    <MenuItem key={p.id} value={p.id}>
+                      {p.name}
+                    </MenuItem>
+                  ))}
                 </Select>
               )}
             />
           </FormControl>
 
-          <TextField
-            fullWidth
-            label="Local de atendimento"
-            sx={{ mt: 2 }}
-            {...register("placeOfService")}
-            error={!!errors.placeOfService}
-          />
+          <Stack sx={{ mt: 2 }} direction="row" spacing={1}>
+            <TextField
+              label="Local de atendimento"
+              sx={{ flex: 1 }}
+              {...register("placeOfService")}
+              error={!!errors.placeOfService}
+            />
+            <Controller
+              name="online_service"
+              control={control}
+              render={({ field }) => (
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={field.value}
+                      onChange={(e) => field.onChange(e.target.checked)}
+                    />
+                  }
+                  label="Atendimento online"
+                />
+              )}
+            />
+          </Stack>
 
           <TextField
             fullWidth
@@ -289,7 +304,6 @@ const AppointmentModal = ({ open, onClose }: AppointmentModalProps) => {
             {...register("timeZone")}
             error={!!errors.timeZone}
           />
-
           <TextField
             fullWidth
             multiline
@@ -307,16 +321,20 @@ const AppointmentModal = ({ open, onClose }: AppointmentModalProps) => {
             sx={{ mt: 4 }}
           >
             <Button variant="outlined" onClick={onClose}>
-              Cancelar
+              cancelar
             </Button>
-            <Button type="submit" variant="contained">
-              Salvar
-            </Button>
+            <LoadingButton
+              type="submit"
+              variant="contained"
+              loading={
+                appointment ? updateAppt.isPending : createAppt.isPending
+              }
+            >
+              salvar
+            </LoadingButton>
           </Stack>
         </form>
       </Box>
     </Modal>
-  )
+  );
 }
-
-export default AppointmentModal

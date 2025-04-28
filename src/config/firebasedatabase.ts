@@ -1,5 +1,5 @@
 
-import { initializeApp } from "firebase/app"
+import { initializeApp, getApps, getApp } from 'firebase/app'
 import { getAuth } from "firebase/auth"
 
 export const firebasedatabase = {
@@ -13,7 +13,8 @@ export const firebasedatabase = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 }
 
-const app = initializeApp(firebasedatabase)
-const auth = getAuth(app)
+export const firebaseApp =
+  getApps().length ? getApp() : initializeApp(firebasedatabase)
 
-export { auth }
+export const auth = getAuth(firebaseApp)
+

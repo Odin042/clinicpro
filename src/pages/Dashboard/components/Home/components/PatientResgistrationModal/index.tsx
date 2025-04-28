@@ -1,4 +1,4 @@
-import React from "react"
+import React from "react";
 import {
   Modal,
   Box,
@@ -12,24 +12,25 @@ import {
   InputLabel,
   Select,
   MenuItem,
-} from "@mui/material"
-import InputMask from "react-input-mask"
-import { toast } from "react-toastify"
-import { useForm, Controller } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { patientSchema } from "../../../../Schema/patientSchema"
-import { z } from "zod"
-import { useCreatePatient } from "../../../../../Register/hooks/useCreatePatient"
+} from "@mui/material";
+import InputMask from "react-input-mask";
+import { toast } from "react-toastify";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { patientSchema } from "../../../../Schema/patientSchema";
+import { z } from "zod";
+import { useCreatePatient } from "../../../../../../hooks/useCreatePatient";
 
-type PatientFormData = z.infer<typeof patientSchema>
+type PatientFormData = z.infer<typeof patientSchema>;
 
 interface PatientFormModalProps {
-  open: boolean
-  onClose: () => void
+  open: boolean;
+  onClose: () => void;
 }
 
 const PatientRegistrationModal = ({ open, onClose }: PatientFormModalProps) => {
-  const { createPatient, loading, error } = useCreatePatient()
+  const createPatient = useCreatePatient();
+
   const {
     control,
     handleSubmit,
@@ -55,18 +56,18 @@ const PatientRegistrationModal = ({ open, onClose }: PatientFormModalProps) => {
       weight: "",
       height: "",
     },
-  })
+  });
 
   const onSubmit = async (data: PatientFormData) => {
     try {
-      await createPatient(data)
-      toast.success("Paciente criado com sucesso")
-      onClose()
-      reset()
-    } catch (err) {
-      toast.error("Erro inesperado. Tente novamente")
+      await createPatient.mutateAsync(data);
+      toast.success("paciente criado com sucesso");
+      onClose();
+      reset();
+    } catch {
+      toast.error("erro inesperado, tente novamente");
     }
-  }
+  };
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -86,7 +87,6 @@ const PatientRegistrationModal = ({ open, onClose }: PatientFormModalProps) => {
         <Typography variant="h6" gutterBottom>
           Adicionar Novo Paciente
         </Typography>
-        {error && <Typography color="error">{error}</Typography>}
         <form onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing={2}>
             <Stack direction="row" spacing={2}>
@@ -238,8 +238,13 @@ const PatientRegistrationModal = ({ open, onClose }: PatientFormModalProps) => {
             </Stack>
           </Stack>
           <Stack direction="row" spacing={2} sx={{ marginTop: 2 }}>
-            <Button type="submit" variant="contained" color="primary" disabled={loading}>
-              {loading ? "Salvando..." : "Salvar"}
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              loading={createPatient.isPending}
+            >
+              {"Salvar"}
             </Button>
             <Button variant="outlined" color="secondary" onClick={onClose}>
               Cancelar
@@ -248,7 +253,7 @@ const PatientRegistrationModal = ({ open, onClose }: PatientFormModalProps) => {
         </form>
       </Box>
     </Modal>
-  )
-}
+  );
+};
 
-export default PatientRegistrationModal
+export default PatientRegistrationModal;
