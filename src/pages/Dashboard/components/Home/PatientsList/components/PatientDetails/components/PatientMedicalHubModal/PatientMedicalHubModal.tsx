@@ -14,7 +14,7 @@ import ScienceOutlinedIcon from '@mui/icons-material/ScienceOutlined'
 import EventNoteOutlinedIcon from '@mui/icons-material/EventNoteOutlined'
 
 
-type HubItem = { icon: React.ReactElement; label: string }
+export type HubItem = { icon: React.ReactElement; label: string }
 
 const avaliacao: HubItem[] = [
   { icon: <AssignmentOutlinedIcon color='success' />, label: 'Prontuário' },
@@ -26,9 +26,13 @@ const prescricao: HubItem[] = [
   { icon: <EventNoteOutlinedIcon color='info' />, label: 'Prescrições' },
 ]
 
-type Props = { open: boolean; onClose: () => void }
+type Props = {
+  open: boolean
+  onClose: () => void
+  onSelect: (item: HubItem) => void
+}
 
-export default function PatientMedicalHubModal({ open, onClose }: Props) {
+export default function PatientMedicalHubModal({ open, onClose, onSelect }: Props) {
   return (
     <Dialog open={open} onClose={onClose} maxWidth='md' fullWidth>
       <DialogTitle sx={{ fontWeight: 700 }}>Adicionar</DialogTitle>
@@ -36,10 +40,14 @@ export default function PatientMedicalHubModal({ open, onClose }: Props) {
         <Section
           title='Escolha uma opção para adicionar uma avaliação'
           items={avaliacao}
+          onSelect={onSelect}
+          onClose={onClose}
         />
         <Section
           title='Escolha uma opção para adicionar uma prescrição'
           items={prescricao}
+          onSelect={onSelect}
+          onClose={onClose}
           mt={4}
         />
       </DialogContent>
@@ -50,10 +58,14 @@ export default function PatientMedicalHubModal({ open, onClose }: Props) {
 const Section = ({
   title,
   items,
+  onSelect,
+  onClose,
   mt = 0
 }: {
   title: string
   items: HubItem[]
+  onSelect: (item: HubItem) => void
+  onClose: () => void
   mt?: number
 }) => (
   <Stack spacing={2} mt={mt}>
@@ -68,6 +80,10 @@ const Section = ({
       {items.map(it => (
         <Paper
           key={it.label}
+          onClick={() => {
+            onSelect(it)
+            onClose()
+          }}
           sx={{
             width: 200,
             height: 140,

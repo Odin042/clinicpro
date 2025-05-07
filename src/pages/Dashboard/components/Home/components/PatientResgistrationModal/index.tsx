@@ -1,4 +1,4 @@
-import React from "react";
+import React from "react"
 import {
   Modal,
   Box,
@@ -12,24 +12,24 @@ import {
   InputLabel,
   Select,
   MenuItem,
-} from "@mui/material";
-import InputMask from "react-input-mask";
-import { toast } from "react-toastify";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { patientSchema } from "../../../../Schema/patientSchema";
-import { z } from "zod";
-import { useCreatePatient } from "../../../../../../hooks/useCreatePatient";
+} from "@mui/material"
+import InputMask from "react-input-mask"
+import { toast } from "react-toastify"
+import { useForm, Controller } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { patientSchema } from "../../../../Schema/patientSchema"
+import { z } from "zod"
+import { useCreatePatient } from "../../../../../../hooks/useCreatePatient"
 
-type PatientFormData = z.infer<typeof patientSchema>;
+type PatientFormData = z.infer<typeof patientSchema>
 
 interface PatientFormModalProps {
-  open: boolean;
-  onClose: () => void;
+  open: boolean
+  onClose: () => void
 }
 
 const PatientRegistrationModal = ({ open, onClose }: PatientFormModalProps) => {
-  const createPatient = useCreatePatient();
+  const createPatient = useCreatePatient()
 
   const {
     control,
@@ -56,18 +56,18 @@ const PatientRegistrationModal = ({ open, onClose }: PatientFormModalProps) => {
       weight: "",
       height: "",
     },
-  });
+  })
 
   const onSubmit = async (data: PatientFormData) => {
     try {
-      await createPatient.mutateAsync(data);
-      toast.success("paciente criado com sucesso");
-      onClose();
-      reset();
+      await createPatient.mutateAsync(data)
+      toast.success("paciente criado com sucesso")
+      onClose()
+      reset()
     } catch {
-      toast.error("erro inesperado, tente novamente");
+      toast.error("erro inesperado, tente novamente")
     }
-  };
+  }
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -253,7 +253,7 @@ const PatientRegistrationModal = ({ open, onClose }: PatientFormModalProps) => {
         </form>
       </Box>
     </Modal>
-  );
-};
+  )
+}
 
-export default PatientRegistrationModal;
+export default PatientRegistrationModal

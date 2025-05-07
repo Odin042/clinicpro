@@ -1,5 +1,5 @@
-import { Controller, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 import {
   Button,
   TextField,
@@ -10,22 +10,22 @@ import {
   Select,
   MenuItem,
   Box,
-} from "@mui/material";
-import { Speciality } from "./Speciality";
-import { useCreateUser } from "../../../../hooks/useCreateUser";
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
-import Logo from "../../../../assets/clinic360prologo.png";
-import { registerFormSchema } from "../../../schemas/RegisterSchema";
-import { estadosBrasileiros } from "../../../../mocks/states";
-import { formatCpfCnpj, formatPhone } from "../../../../utils/formats";
-import { AuthContext } from "../../../../AuthContext";
-import { useContext } from "react";
+} from "@mui/material"
+import { Speciality } from "./Speciality"
+import { useCreateUser } from "../../../../hooks/useCreateUser"
+import { toast } from "react-toastify"
+import { useNavigate } from "react-router-dom"
+import Logo from "../../../../assets/clinic360prologo.png"
+import { registerFormSchema } from "../../../schemas/RegisterSchema"
+import { estadosBrasileiros } from "../../../../mocks/states"
+import { formatCpfCnpj, formatPhone } from "../../../../utils/formats"
+import { AuthContext } from "../../../../AuthContext"
+import { useContext } from "react"
 
 export const RegisterForm = () => {
-  const { mutateAsync: createUser, isPending } = useCreateUser();
-  const { refreshUser } = useContext(AuthContext);
-  const navigate = useNavigate();
+  const { mutateAsync: createUser, isPending } = useCreateUser()
+  const { refreshUser } = useContext(AuthContext)
+  const navigate = useNavigate()
 
   const {
     control,
@@ -47,7 +47,7 @@ export const RegisterForm = () => {
       register: "",
       phone: "",
     },
-  });
+  })
 
   const onSubmit = async (data) => {
     const {
@@ -60,23 +60,23 @@ export const RegisterForm = () => {
       register,
       phone,
       uf,
-    } = data;
+    } = data
 
     try {
       await createUser({
         email,
         password,
         extra: { speciality, username, cpf_cnpj, gender, register, phone, uf },
-      });
+      })
 
-      await refreshUser();
-      toast.success("usuário criado com sucesso");
-      reset();
-      navigate("/dashboard");
+      await refreshUser()
+      toast.success("Usuário criado com sucesso")
+      reset()
+      navigate("/dashboard")
     } catch {
-      toast.error("erro inesperado, tente novamente");
+      toast.error("Erro inesperado, tente novamente")
     }
-  };
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -236,8 +236,8 @@ export const RegisterForm = () => {
                     error={!!errors.register}
                     helperText={errors.register?.message}
                     onChange={(e) => {
-                      const numericValue = e.target.value.replace(/\D/g, "");
-                      field.onChange(numericValue);
+                      const numericValue = e.target.value.replace(/\D/g, "")
+                      field.onChange(numericValue)
                     }}
                   />
                 )}
@@ -331,5 +331,5 @@ export const RegisterForm = () => {
         </Box>
       </Stack>
     </form>
-  );
-};
+  )
+}
