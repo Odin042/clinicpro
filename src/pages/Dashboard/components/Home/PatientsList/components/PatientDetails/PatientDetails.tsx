@@ -1,5 +1,5 @@
-import React, { useState } from "react"
-import { useParams } from "react-router-dom"
+import React, { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Stack,
   Typography,
@@ -13,50 +13,55 @@ import {
   MenuItem,
   Select,
   FormControl,
-} from "@mui/material"
-import AddIcon from "@mui/icons-material/Add"
-import dayjs from "dayjs"
-import usePatient from "../../../../../../../hooks/useGetPatientId"
-import PatientMedicalHubModal from "./components/PatientMedicalHubModal/PatientMedicalHubModal"
-import { HubItem } from "./components/PatientMedicalHubModal/PatientMedicalHubModal"
-import { MedicalRecord } from "./components/PatientMedicalHubModal/components/MedicalRecord/MedicalRecord"
-import useRecords from "../../../../../../../hooks/useGetMedicalRecord"
-import DOMPurify from "dompurify"
-import { DotLottieReact } from "@lottiefiles/dotlottie-react"
-import EditCalendarIcon from '@mui/icons-material/EditCalendar'
-import AppointmentModal from "../../../components/AppointmentsModal"
+  AccordionDetails,
+  Accordion,
+  AccordionSummary,
+} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import dayjs from "dayjs";
+import usePatient from "../../../../../../../hooks/useGetPatientId";
+import PatientMedicalHubModal from "./components/PatientMedicalHubModal/PatientMedicalHubModal";
+import { HubItem } from "./components/PatientMedicalHubModal/PatientMedicalHubModal";
+import { MedicalRecord } from "./components/PatientMedicalHubModal/components/MedicalRecord/MedicalRecord";
+import useRecords from "../../../../../../../hooks/useGetMedicalRecord";
+import DOMPurify from "dompurify";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import EditCalendarIcon from "@mui/icons-material/EditCalendar";
+import AppointmentModal from "../../../components/AppointmentsModal";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import DescriptionIcon from "@mui/icons-material/Description";
 
 type RecordItem = {
-  id: string
-  title?: string
-  content: string
-  created_at: string
-}
+  id: string;
+  title?: string;
+  content: string;
+  created_at: string;
+};
 
 const PatientDetails = () => {
-  const { id } = useParams()
-  const { data: patient, isLoading } = usePatient(id!)
-  const { data: records = [], isLoading: recLoading } = useRecords(id!)
+  const { id } = useParams();
+  const { data: patient, isLoading } = usePatient(id!);
+  const { data: records = [], isLoading: recLoading } = useRecords(id!);
+  const navigate = useNavigate()
+  const [openHub, setOpenHub] = useState(false);
+  const [selected, setSelected] = useState<HubItem | null>(null);
+  const handleSelect = (item: HubItem) => setSelected(item);
 
-  const [openHub, setOpenHub] = useState(false)
-  const [openSchedule, setOpenSchedule] = useState(false)
-  const [selected, setSelected] = useState<HubItem | null>(null)
-  const handleSelect = (item: HubItem) => setSelected(item)
-
-  const [selectedRec, setSelectedRec] = useState<RecordItem | null>(null)
-  const [page, setPage] = useState(1)
-  const [rowsPerPage, setRowsPerPage] = useState(5)
+  const [selectedRec, setSelectedRec] = useState<RecordItem | null>(null);
+  const [page, setPage] = useState(1);
+  const [openList, setOpenList] = useState(true);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const sortedRecords = [...records].sort(
     (a, b) =>
       new Date(b.created_at).valueOf() - new Date(a.created_at).valueOf()
-  )
+  );
 
-  const totalPages = Math.ceil(sortedRecords.length / rowsPerPage)
+  const totalPages = Math.ceil(sortedRecords.length / rowsPerPage);
   const paginated = sortedRecords.slice(
     (page - 1) * rowsPerPage,
     page * rowsPerPage
-  )
+  );
 
   if (isLoading)
     return (
@@ -74,8 +79,8 @@ const PatientDetails = () => {
           style={{ width: 400, height: 300 }}
         />
       </Box>
-    )
-  if (!patient) return null
+    );
+  if (!patient) return null;
 
   return (
     <>
@@ -86,7 +91,7 @@ const PatientDetails = () => {
         py={3}
         width="100%"
       >
-        <Paper elevation={0} sx={{ p: 2, borderRadius: 2, minWidth: 160 }} >
+        <Paper elevation={0} sx={{ p: 2, borderRadius: 2, minWidth: 160 }}>
           <Button
             fullWidth
             variant="contained"
@@ -100,7 +105,7 @@ const PatientDetails = () => {
             fullWidth
             variant="contained"
             startIcon={<EditCalendarIcon />}
-            onClick={() => setOpenSchedule(true)}
+            onClick={() => navigate("/calendar")}
           >
             Agendar
           </Button>
@@ -164,70 +169,103 @@ const PatientDetails = () => {
                 />
               </Stack>
             ) : (
-              <Stack spacing={2}>
-                <Typography variant="h6" fontWeight={700}>
-                  Prontuários ({sortedRecords.length})
-                </Typography>
-                <Box
-                  display="grid"
-                  gridTemplateColumns="repeat(auto-fill, minmax(220px, 1fr))"
-                  gap={1}
+              <Accordion
+                expanded={openList}
+                onChange={(_, exp) => setOpenList(exp)}
+                sx={{ boxShadow: 0, borderRadius: 2 }}
+              >
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  sx={{
+                    bgcolor: "#e8edff",
+                    borderRadius: 2,
+                    "& .MuiAccordionSummary-content": { m: 0 },
+                  }}
                 >
-                  {paginated.map((rec: RecordItem, i: number) => {
-                    const globalIndex =
-                      sortedRecords.length - ((page - 1) * rowsPerPage + i)
-                    return (
-                      <Button
-                        key={rec.id}
-                        variant="outlined"
-                        size="small"
-                        onClick={() => setSelectedRec(rec)}
-                        sx={{
-                          width: "100%",
-                          textTransform: "none",
-                          p: 1.5,
-                          borderRadius: "8px",
-                          borderWidth: "2px",
-                        }}
-                      >
-                        <Stack>
-                          <Typography
-                            fontSize={13}
-                            fontWeight={600}
-                          >{`Prontuário ${globalIndex}`}</Typography>
-                          <Typography variant="caption" color="text.secondary">
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <DescriptionIcon
+                      sx={{ color: "primary.main", mr: 1 }}
+                      fontSize="small"
+                    />
+                    <Typography variant="h6" fontWeight={700}>
+                      Prontuários ({sortedRecords.length})
+                    </Typography>
+                  </Box>
+                </AccordionSummary>
+
+                <AccordionDetails>
+                  <Box>
+                    {paginated.map((rec: RecordItem, i: number) => {
+                      const idx =
+                        sortedRecords.length - ((page - 1) * rowsPerPage + i);
+                      return (
+                        <Box
+                          key={rec.id}
+                          onClick={() => setSelectedRec(rec)}
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            p: 1.5,
+                            mb: 1,
+                            border: "1px solid",
+                            borderColor: "grey.300",
+                            borderRadius: 2,
+                            cursor: "pointer",
+                            "&:hover": { backgroundColor: "grey.100" },
+                          }}
+                        >
+                          <Avatar
+                            sx={{
+                              bgcolor: "primary.light",
+                              color: "primary.contrastText",
+                              width: 32,
+                              height: 32,
+                              mr: 2,
+                              fontSize: 14,
+                            }}
+                          >
+                            {idx}
+                          </Avatar>
+
+                          <Typography flex={1} fontSize={14} fontWeight={600}>
+                            {`${idx}ª Prontuário`}
+                          </Typography>
+
+                          <Typography fontSize={12}>
                             {dayjs(rec.created_at).format("DD/MM/YYYY")}
                           </Typography>
-                        </Stack>
-                      </Button>
-                    )
-                  })}
-                </Box>
-                <Stack
-                  direction="row"
-                  justifyContent="space-between"
-                  alignItems="center"
-                >
-                  <FormControl size="small">
-                    <Select
-                      value={rowsPerPage}
-                      onChange={(e) => {
-                        setRowsPerPage(Number(e.target.value))
-                        setPage(1)
-                      }}
+                        </Box>
+                      );
+                    })}
+
+                    <Stack
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems="center"
                     >
-                      <MenuItem value={5}>5</MenuItem>
-                      <MenuItem value={10}>10</MenuItem>
-                      <MenuItem value={20}>20</MenuItem>
-                    </Select>
-                  </FormControl>
-                  <Pagination
-                    count={totalPages}
-                    page={page}
-                    onChange={(_, v) => setPage(v)}
-                  />
-                </Stack>
-              </Stack>
+                      <FormControl size="small">
+                        <Select
+                          value={rowsPerPage}
+                          onChange={(e) => {
+                            setRowsPerPage(Number(e.target.value));
+                            setPage(1);
+                          }}
+                        >
+                          <MenuItem value={5}>5</MenuItem>
+                          <MenuItem value={10}>10</MenuItem>
+                          <MenuItem value={20}>20</MenuItem>
+                        </Select>
+                      </FormControl>
+
+                      <Pagination
+                        count={totalPages}
+                        page={page}
+                        onChange={(_, v) => setPage(v)}
+                      />
+                    </Stack>
+                  </Box>
+                </AccordionDetails>
+              </Accordion>
             )}
           </Paper>
         </Stack>
@@ -237,16 +275,11 @@ const PatientDetails = () => {
         onClose={() => setOpenHub(false)}
         onSelect={handleSelect}
       />
-      <AppointmentModal
-        open={openSchedule}
-        onClose={() => setOpenSchedule(false)}
-        patientId={id!}
-        />
     </>
-  )
-}
+  );
+};
 
-const Info = ({ label, value }: { label: string, value: string }) => (
+const Info = ({ label, value }: { label: string; value: string }) => (
   <Stack spacing={0.5}>
     <Typography variant="caption" color="text.secondary">
       {label}
@@ -255,6 +288,6 @@ const Info = ({ label, value }: { label: string, value: string }) => (
       {value}
     </Typography>
   </Stack>
-)
+);
 
-export default PatientDetails
+export default PatientDetails;
