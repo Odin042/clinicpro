@@ -44,16 +44,15 @@ export default function CalendarView({
   const calendarRef = useRef<FullCalendar>(null)
 
   function handleDateClick(info: any) {
-    const calendarApi = calendarRef.current?.getApi?.()
-    if (!calendarApi) return
-
-    if (calendarApi.view.type === "dayGridMonth") {
-      calendarApi.changeView("timeGridDay", info.date)
-    } else {
-      const d = new Date(info.date)
-      d.setMinutes(d.getMinutes() - d.getTimezoneOffset())
-      onDateClick(d)
+    const api = calendarRef.current?.getApi?.()
+    if (!api) return
+  
+    if (api.view.type === 'dayGridMonth') {
+      api.changeView('timeGridDay', info.date)   
+      return
     }
+  
+    onDateClick(info.date)                      
   }
 
   function handleEventChange(info: EventDropArg | EventResizeDoneArg) {
@@ -114,7 +113,7 @@ export default function CalendarView({
         editable
         eventDrop={handleEventChange}
         eventResize={handleEventChange}
-        dateClick={(info) => onDateClick(info.date)}
+        dateClick={handleDateClick}
         height="auto"
         eventMouseEnter={handleEventMouseEnter}
         eventMouseLeave={handleEventMouseLeave}

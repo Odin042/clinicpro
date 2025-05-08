@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { useState } from "react"
+import { useParams } from "react-router-dom"
 import {
   Stack,
   Typography,
@@ -8,55 +8,74 @@ import {
   Skeleton,
   Button,
   Divider,
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Box,
   Pagination,
   MenuItem,
   Select,
   FormControl,
-} from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import dayjs from "dayjs";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import usePatient from "../../../../../../../hooks/useGetPatientId";
-import PatientMedicalHubModal from "./components/PatientMedicalHubModal/PatientMedicalHubModal";
-import { HubItem } from "./components/PatientMedicalHubModal/PatientMedicalHubModal";
-import { MedicalRecord } from "./components/PatientMedicalHubModal/components/MedicalRecord/MedicalRecord";
-import useRecords from "../../../../../../../hooks/useGetMedicalRecord";
-import DOMPurify from "dompurify";
+} from "@mui/material"
+import AddIcon from "@mui/icons-material/Add"
+import dayjs from "dayjs"
+import usePatient from "../../../../../../../hooks/useGetPatientId"
+import PatientMedicalHubModal from "./components/PatientMedicalHubModal/PatientMedicalHubModal"
+import { HubItem } from "./components/PatientMedicalHubModal/PatientMedicalHubModal"
+import { MedicalRecord } from "./components/PatientMedicalHubModal/components/MedicalRecord/MedicalRecord"
+import useRecords from "../../../../../../../hooks/useGetMedicalRecord"
+import DOMPurify from "dompurify"
+import { DotLottieReact } from "@lottiefiles/dotlottie-react"
+import EditCalendarIcon from '@mui/icons-material/EditCalendar'
+import AppointmentModal from "../../../components/AppointmentsModal"
 
-type Record = { id: string; title: string };
+type RecordItem = {
+  id: string
+  title?: string
+  content: string
+  created_at: string
+}
 
 const PatientDetails = () => {
-  const { id } = useParams();
-  const { data: patient, isLoading } = usePatient(id!);
-  const { data: records = [], isLoading: recLoading } = useRecords(id!);
-  const [openHub, setOpenHub] = useState(false);
-  const [selected, setSelected] = useState<HubItem | null>(null);
-  const handleSelect = (item: HubItem) => setSelected(item);
-  const [expanded, setExpanded] = useState<string | false>(false);
-  const [listOpen, setListOpen] = useState(true);
-  const toggleList = () => setListOpen((o) => !o);
-  const handleChange = (id: string) => (_: any, isExp: boolean) =>
-    setExpanded(isExp ? id : false);
-  const [page, setPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const { id } = useParams()
+  const { data: patient, isLoading } = usePatient(id!)
+  const { data: records = [], isLoading: recLoading } = useRecords(id!)
 
-  const totalPages = Math.ceil(records.length / rowsPerPage);
-  const paginated = records.slice((page - 1) * rowsPerPage, page * rowsPerPage);
+  const [openHub, setOpenHub] = useState(false)
+  const [openSchedule, setOpenSchedule] = useState(false)
+  const [selected, setSelected] = useState<HubItem | null>(null)
+  const handleSelect = (item: HubItem) => setSelected(item)
+
+  const [selectedRec, setSelectedRec] = useState<RecordItem | null>(null)
+  const [page, setPage] = useState(1)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
+
+  const sortedRecords = [...records].sort(
+    (a, b) =>
+      new Date(b.created_at).valueOf() - new Date(a.created_at).valueOf()
+  )
+
+  const totalPages = Math.ceil(sortedRecords.length / rowsPerPage)
+  const paginated = sortedRecords.slice(
+    (page - 1) * rowsPerPage,
+    page * rowsPerPage
+  )
 
   if (isLoading)
     return (
-      <Skeleton
-        variant="rectangular"
-        height={400}
-        sx={{ borderRadius: 2, m: 4 }}
-      />
-    );
-
-  if (!patient) return null;
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="80vh"
+        width="100%"
+      >
+        <DotLottieReact
+          src="https://lottie.host/2954e96c-70f5-4029-a5b9-00c91dad99a4/AXroSuO420.lottie"
+          loop
+          autoplay
+          style={{ width: 400, height: 300 }}
+        />
+      </Box>
+    )
+  if (!patient) return null
 
   return (
     <>
@@ -67,14 +86,23 @@ const PatientDetails = () => {
         py={3}
         width="100%"
       >
-        <Paper elevation={0} sx={{ p: 2, borderRadius: 2, minWidth: 160 }}>
+        <Paper elevation={0} sx={{ p: 2, borderRadius: 2, minWidth: 160 }} >
           <Button
             fullWidth
             variant="contained"
+            sx={{ mb: 3 }}
             startIcon={<AddIcon />}
             onClick={() => setOpenHub(true)}
           >
             Adicionar
+          </Button>
+          <Button
+            fullWidth
+            variant="contained"
+            startIcon={<EditCalendarIcon />}
+            onClick={() => setOpenSchedule(true)}
+          >
+            Agendar
           </Button>
         </Paper>
 
@@ -89,7 +117,6 @@ const PatientDetails = () => {
                   .join("")
                   .toUpperCase()}
               </Avatar>
-
               <Stack spacing={0.5}>
                 <Typography variant="h5" fontWeight={700}>
                   {patient.name}
@@ -100,9 +127,7 @@ const PatientDetails = () => {
                 <Typography variant="body2">{patient.email}</Typography>
                 <Typography variant="body2">{patient.whatsapp}</Typography>
               </Stack>
-
               <Divider flexItem orientation="vertical" sx={{ mx: 3 }} />
-
               <Stack direction="row" spacing={4}>
                 <Info
                   label="Peso"
@@ -122,101 +147,106 @@ const PatientDetails = () => {
               <MedicalRecord />
             ) : recLoading ? (
               <Skeleton variant="rectangular" height={120} />
-            ) : (
-              <Accordion
-                expanded={listOpen}
-                onChange={toggleList}
-                sx={{ boxShadow: 0, borderRadius: 2 }}
-              >
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
-                  sx={{
-                    bgcolor: "#e8edff",
-                    borderRadius: 2,
-                    "& .MuiAccordionSummary-content": { m: 0 },
+            ) : selectedRec ? (
+              <Stack spacing={2}>
+                <Button variant="text" onClick={() => setSelectedRec(null)}>
+                  ← Voltar
+                </Button>
+                <Typography variant="h6" fontWeight={700}>
+                  {selectedRec.title ?? "Prontuário"} –{" "}
+                  {dayjs(selectedRec.created_at).format("DD/MM/YYYY HH:mm")}
+                </Typography>
+                <Box
+                  sx={{ typography: "body2" }}
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(selectedRec.content),
                   }}
+                />
+              </Stack>
+            ) : (
+              <Stack spacing={2}>
+                <Typography variant="h6" fontWeight={700}>
+                  Prontuários ({sortedRecords.length})
+                </Typography>
+                <Box
+                  display="grid"
+                  gridTemplateColumns="repeat(auto-fill, minmax(220px, 1fr))"
+                  gap={1}
                 >
-                  <Typography variant="h6" fontWeight={700}>
-                    Prontuários ({records.length})
-                  </Typography>
-                </AccordionSummary>
-
-                <AccordionDetails sx={{ pt: 2 }}>
-                  <Stack>
-                    {paginated.map((rec) => (
-                      <Accordion
+                  {paginated.map((rec: RecordItem, i: number) => {
+                    const globalIndex =
+                      sortedRecords.length - ((page - 1) * rowsPerPage + i)
+                    return (
+                      <Button
                         key={rec.id}
-                        expanded={expanded === rec.id}
-                        onChange={handleChange(rec.id)}
-                        sx={{ mb: 1, borderRadius: 2, boxShadow: 0 }}
+                        variant="outlined"
+                        size="small"
+                        onClick={() => setSelectedRec(rec)}
+                        sx={{
+                          width: "100%",
+                          textTransform: "none",
+                          p: 1.5,
+                          borderRadius: "8px",
+                          borderWidth: "2px",
+                        }}
                       >
-                        <AccordionSummary
-                          expandIcon={<ExpandMoreIcon />}
-                          sx={{
-                            bgcolor: "#f1f5ff",
-                            "& .MuiAccordionSummary-content": { m: 1 },
-                          }}
-                        >
-                          <Typography fontWeight={600}>
-                            {dayjs(rec.created_at).format("DD/MM/YYYY HH:mm")}
+                        <Stack>
+                          <Typography
+                            fontSize={13}
+                            fontWeight={600}
+                          >{`Prontuário ${globalIndex}`}</Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {dayjs(rec.created_at).format("DD/MM/YYYY")}
                           </Typography>
-                        </AccordionSummary>
-
-                        <AccordionDetails sx={{ px: 3, py: 2 }}>
-                          <Box
-                            sx={{ typography: "body2" }}
-                            dangerouslySetInnerHTML={{
-                              __html: DOMPurify.sanitize(rec.content),
-                            }}
-                          />
-                        </AccordionDetails>
-                      </Accordion>
-                    ))}
-
-                    <Stack
-                      direction="row"
-                      justifyContent="space-between"
-                      alignItems="center"
-                      mt={2}
+                        </Stack>
+                      </Button>
+                    )
+                  })}
+                </Box>
+                <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="center"
+                >
+                  <FormControl size="small">
+                    <Select
+                      value={rowsPerPage}
+                      onChange={(e) => {
+                        setRowsPerPage(Number(e.target.value))
+                        setPage(1)
+                      }}
                     >
-                      <FormControl size="small">
-                        <Select
-                          value={rowsPerPage}
-                          onChange={(e) => {
-                            setRowsPerPage(Number(e.target.value));
-                            setPage(1);
-                          }}
-                        >
-                          <MenuItem value={5}>5</MenuItem>
-                          <MenuItem value={10}>10</MenuItem>
-                          <MenuItem value={20}>20</MenuItem>
-                        </Select>
-                      </FormControl>
-
-                      <Pagination
-                        count={totalPages}
-                        page={page}
-                        onChange={(_, val) => setPage(val)}
-                      />
-                    </Stack>
-                  </Stack>
-                </AccordionDetails>
-              </Accordion>
+                      <MenuItem value={5}>5</MenuItem>
+                      <MenuItem value={10}>10</MenuItem>
+                      <MenuItem value={20}>20</MenuItem>
+                    </Select>
+                  </FormControl>
+                  <Pagination
+                    count={totalPages}
+                    page={page}
+                    onChange={(_, v) => setPage(v)}
+                  />
+                </Stack>
+              </Stack>
             )}
           </Paper>
         </Stack>
       </Stack>
-
       <PatientMedicalHubModal
         open={openHub}
         onClose={() => setOpenHub(false)}
         onSelect={handleSelect}
       />
+      <AppointmentModal
+        open={openSchedule}
+        onClose={() => setOpenSchedule(false)}
+        patientId={id!}
+        />
     </>
-  );
-};
+  )
+}
 
-const Info = ({ label, value }) => (
+const Info = ({ label, value }: { label: string, value: string }) => (
   <Stack spacing={0.5}>
     <Typography variant="caption" color="text.secondary">
       {label}
@@ -225,6 +255,6 @@ const Info = ({ label, value }) => (
       {value}
     </Typography>
   </Stack>
-);
+)
 
-export default PatientDetails;
+export default PatientDetails

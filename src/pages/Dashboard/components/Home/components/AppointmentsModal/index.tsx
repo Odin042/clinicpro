@@ -25,10 +25,12 @@ import { useCreateAppointments } from "../../../../../../hooks/useCreateAppointm
 import { useUpdateAppointments } from "../../../../../../hooks/useUpdateAppointments";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
+import dayjs from "dayjs";
 
 interface AppointmentModalProps {
   open: boolean;
   onClose: () => void;
+  patientId?: string | number
   selectedDate?: Date | null;
   appointment?: Appointment;
 }
@@ -57,12 +59,15 @@ const REVERSE_STATUS_MAP = Object.fromEntries(
 export default function AppointmentModal({
   open,
   onClose,
+  patientId,
   selectedDate,
   appointment,
 }: AppointmentModalProps) {
   const { data: patients = [] } = usePatients();
   const createAppt = useCreateAppointments();
   const updateAppt = useUpdateAppointments();
+
+  const toLocalInput = (d: Date) => dayjs(d).format("YYYY-MM-DDTHH:mm");
 
   const {
     control,
@@ -77,7 +82,7 @@ export default function AppointmentModal({
     defaultValues: {
       type: "consulta",
       situation: "pendente",
-      patientId: 0,
+      patientId: patientId ? Number(patientId) : 0,
       placeOfService: "",
       service: "",
       online_service: false,
@@ -88,6 +93,7 @@ export default function AppointmentModal({
     },
   });
 
+
   useEffect(() => {
     if (appointment) {
       reset({
@@ -97,21 +103,24 @@ export default function AppointmentModal({
         placeOfService: appointment.place_of_service,
         service: appointment.service,
         online_service: appointment.online_service,
-        startDate: appointment.start_time.slice(0, 16),
-        endDate: appointment.end_time.slice(0, 16),
+        startDate: toLocalInput(new Date(appointment.start_time)),
+        endDate: toLocalInput(new Date(appointment.end_time)),
         timeZone: appointment.timezone,
         description: appointment.description,
       });
     } else if (selectedDate) {
-      const startIso = selectedDate.toISOString().slice(0, 16);
-      const endIso = new Date(selectedDate.getTime() + 60 * 60 * 1000)
-        .toISOString()
-        .slice(0, 16);
-      reset({ ...getValues(), startDate: startIso, endDate: endIso });
+      reset({
+        ...getValues(),
+        patientId: Number(patientId),
+        startDate: toLocalInput(selectedDate),
+        endDate: toLocalInput(
+          new Date(selectedDate.getTime() + 60 * 60 * 1000)
+        ),
+      });
     } else {
       reset();
     }
-  }, [appointment, selectedDate, reset, getValues]);
+  }, [open, appointment, patientId, selectedDate, reset]);
 
   const onSubmit = async (form: AppointmentFormData) => {
     const payload = {
@@ -121,8 +130,8 @@ export default function AppointmentModal({
       place_of_service: form.placeOfService,
       service: form.service,
       online_service: form.online_service,
-      start_time: form.startDate,
-      end_time: form.endDate,
+      start_time: new Date(form.startDate).toISOString(),
+      end_time: new Date(form.endDate).toISOString(),
       timezone: form.timeZone,
       description: form.description,
     };
@@ -138,7 +147,7 @@ export default function AppointmentModal({
       onClose();
       reset();
     } catch {
-      toast.error("erro ao salvar agendamento");
+      toast.error("Erro ao salvar agendamento");
     }
   };
 
@@ -234,6 +243,7 @@ export default function AppointmentModal({
                   {...field}
                   labelId="select-patient"
                   label="Paciente"
+                  disabled={!!patientId} 
                   error={!!errors.patientId}
                 >
                   {patients.map((p) => (
