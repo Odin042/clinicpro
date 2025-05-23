@@ -1,18 +1,26 @@
 import { Autocomplete, TextField, Typography } from "@mui/material";
 import { professions } from "../../../../../mocks/profession";
 
-export const Speciality = ({ value, onChange, error, helperText }) => {
-  const professionData = professions.map((profession) => profession);
+interface SpecialityProps {
+  value: string | null;
+  onChange: (value: string | null) => void;
+  error?: boolean;
+  helperText?: string;
+}
 
+export const Speciality = ({
+  value,
+  onChange,
+  error,
+  helperText,
+}: SpecialityProps) => {
   return (
     <div>
       <Autocomplete
         disablePortal
-        options={professionData}
-        value={value || null} 
-        onChange={(event, newValue) => {
-          onChange(newValue);
-        }}
+        options={professions}
+        value={value}
+        onChange={(_, newValue) => onChange(newValue)}
         sx={{
           width: { xs: "100%", sm: "200%", md: "100%" },
         }}
@@ -26,5 +34,5 @@ export const Speciality = ({ value, onChange, error, helperText }) => {
         )}
       />
     </div>
-  )
-}
+  );
+};
