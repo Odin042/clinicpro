@@ -41,3 +41,8 @@ export const formatCpfCnpj = (value: string) => {
       .replace(/(\d{4})(\d)/, "$1-$2");
   }
 }
+
+export function formatSpecialtyLabel(key: string) {
+  const cleaned = key.replace('_', ' ')
+  return cleaned.charAt(0).toUpperCase() + cleaned.slice(1)
+}
